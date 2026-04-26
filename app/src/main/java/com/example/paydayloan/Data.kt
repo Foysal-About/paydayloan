@@ -30,7 +30,7 @@ enum class LoanStatus {
 
 // Dummy data
 val dummyEmployee = Employee(
-    name = "John Doe",
+    name = "Foysal Islam",
     salary = 50000.0,
     eligibleAmount = 40000.0, // 80% of salary
     availableLimit = 40000.0, // assuming no active loan

@@ -23,10 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.paydayloan.Employee
+import com.example.paydayloan.ui.components.AppNavigationBar
 import java.util.Locale
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
-import com.example.paydayloan.ui.components.AppNavigationBar
+import com.example.paydayloan.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,13 +53,13 @@ fun ApplyAdvanceScreen(navController: NavController, employee: Employee) {
                         "Apply for Advance",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A237E)
+                            color = TextDark
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
@@ -72,86 +73,93 @@ fun ApplyAdvanceScreen(navController: NavController, employee: Employee) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF8F9FA))
+                .background(BackgroundBlue)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // Your Eligibility Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Your Eligibility", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Your Eligibility", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                    Spacer(modifier = Modifier.height(16.dp))
                     EligibilityRow("Monthly Salary", employee.salary)
-                    EligibilityRow("Maximum Eligible (80%)", maxEligible)
-                    EligibilityRow("Available Limit", availableLimit, isHighlight = true)
+                    EligibilityRow("Maximum Limit (80%)", maxEligible)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BackgroundBlue)
+                    EligibilityRow("Available to Withdraw", availableLimit, isHighlight = true)
                 }
             }
 
             // Enter Requested Amount
             Column {
                 Text(
-                    "Enter Requested Amount",
+                    "Requested Amount",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF1A237E)
+                    color = TextDark
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = requestedAmount,
                     onValueChange = { requestedAmount = it },
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(16.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    leadingIcon = { Text("৳", style = MaterialTheme.typography.titleLarge) },
+                    leadingIcon = { Text("৳", style = MaterialTheme.typography.titleLarge, color = PrimaryBlue) },
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedContainerColor = Color.White,
-                        focusedContainerColor = Color.White
+                        focusedContainerColor = Color.White,
+                        focusedBorderColor = PrimaryBlue,
+                        unfocusedBorderColor = Color.Transparent
                     )
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 Text(
-                    "Minimum ৳ 1,000  •  Maximum ৳ ${String.format(Locale.US, "%,.0f", availableLimit)}",
+                    "Min ৳1,000 • Max ৳${String.format(Locale.US, "%,.0f", availableLimit)}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = TextGray
                 )
             }
 
             // Purpose Dropdown
             Column {
                 Text(
-                    "Purpose (Optional)",
-                    fontSize = 12.sp,
-                    color = Color.Gray
+                    "Select Purpose",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    color = TextDark
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Box {
                     OutlinedTextField(
                         value = selectedPurpose,
                         onValueChange = {},
                         readOnly = true,
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(16.dp),
                         trailingIcon = {
                             Icon(
                                 Icons.Default.ArrowDropDown,
                                 "Dropdown",
-                                Modifier.clickable { expanded = true }
+                                Modifier.clickable { expanded = true },
+                                tint = PrimaryBlue
                             )
                         },
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
+                            focusedContainerColor = Color.White,
+                            unfocusedBorderColor = Color.Transparent
                         )
                     )
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        modifier = Modifier.fillMaxWidth(0.9f)
+                        modifier = Modifier.fillMaxWidth(0.9f).background(Color.White)
                     ) {
                         purposes.forEach { purpose ->
                             DropdownMenuItem(
@@ -169,36 +177,38 @@ fun ApplyAdvanceScreen(navController: NavController, employee: Employee) {
             // Estimated Charges Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F3F4))
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = PrimaryBlue.copy(alpha = 0.05f))
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Text(
-                        "Estimated Charges & Disbursement",
+                        "Summary & Charges",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp
+                        fontSize = 15.sp,
+                        color = TextDark
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                     ChargeRow("Requested Amount", amount)
                     ChargeRow(
-                        label = "Service Charge (2% or 200)",
+                        label = "Service Charge (2%)",
                         amount = serviceCharge,
                         hasInfo = true
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            "You Will Receive",
+                            "Net Disbursement",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00695C)
+                            color = PrimaryBlue
                         )
                         Text(
-                            "৳ ${String.format(Locale.US, "%,.2f", netAmount)}",
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00695C)
+                            "৳ ${String.format(Locale.US, "%,.0f", netAmount)}",
+                            fontWeight = FontWeight.ExtraBold,
+                            color = PrimaryBlue,
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -206,30 +216,30 @@ fun ApplyAdvanceScreen(navController: NavController, employee: Employee) {
 
             // Repayment Info
             Surface(
-                color = Color(0xFFF8F9FA),
-                shape = RoundedCornerShape(8.dp),
+                color = Color.White,
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         Icons.Outlined.Shield,
                         contentDescription = null,
-                        tint = Color(0xFF00695C),
-                        modifier = Modifier.size(24.dp)
+                        tint = SuccessGreen,
+                        modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Repayment will be done from your salary on 30 May 2024",
+                        text = "Secure repayment from salary on 30 May 2024",
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = TextGray
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Button(
                 onClick = {
@@ -239,12 +249,14 @@ fun ApplyAdvanceScreen(navController: NavController, employee: Employee) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00695C)),
-                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                shape = RoundedCornerShape(16.dp),
                 enabled = amount >= 1000 && amount <= availableLimit
             ) {
-                Text("Continue", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Continue", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
+            
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
@@ -259,15 +271,15 @@ fun EligibilityRow(label: String, amount: Double, isHighlight: Boolean = false) 
     ) {
         Text(
             label,
-            color = if (isHighlight) Color(0xFF00695C) else Color.Gray,
+            color = if (isHighlight) PrimaryBlue else TextGray,
             fontSize = 14.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
-            "৳ ${String.format(Locale.US, "%,.2f", amount)}",
-            color = if (isHighlight) Color(0xFF00695C) else Color.Black,
+            "৳ ${String.format(Locale.US, "%,.0f", amount)}",
+            color = if (isHighlight) PrimaryBlue else TextDark,
             fontSize = 14.sp,
-            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal
+            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium
         )
     }
 }
@@ -282,21 +294,22 @@ fun ChargeRow(label: String, amount: Double, hasInfo: Boolean = false) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(label, color = Color.Gray, fontSize = 14.sp)
+            Text(label, color = TextGray, fontSize = 14.sp)
             if (hasInfo) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     Icons.Default.Info,
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp),
-                    tint = Color.Gray
+                    modifier = Modifier.size(14.dp),
+                    tint = TextGray
                 )
             }
         }
         Text(
-            "৳ ${String.format(Locale.US, "%,.2f", amount)}",
-            color = Color.Black,
-            fontSize = 14.sp
+            "৳ ${String.format(Locale.US, "%,.0f", amount)}",
+            color = TextDark,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

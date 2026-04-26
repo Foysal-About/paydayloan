@@ -23,12 +23,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+import com.example.paydayloan.ui.theme.PrimaryBlue
+import com.example.paydayloan.ui.theme.TextGray
+
 @Composable
 fun AppNavigationBar(navController: NavController) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = Color.White, tonalElevation = 8.dp) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = null) },
             label = { Text("Home") },
@@ -41,11 +44,11 @@ fun AppNavigationBar(navController: NavController) {
                 }
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color(0xFF00695C),
-                selectedTextColor = Color(0xFF00695C),
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
-                indicatorColor = Color.Transparent
+                selectedIconColor = PrimaryBlue,
+                selectedTextColor = PrimaryBlue,
+                unselectedIconColor = TextGray,
+                unselectedTextColor = TextGray,
+                indicatorColor = PrimaryBlue.copy(alpha = 0.1f)
             )
         )
         NavigationBarItem(
@@ -54,8 +57,8 @@ fun AppNavigationBar(navController: NavController) {
             selected = false,
             onClick = {},
             colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
+                unselectedIconColor = TextGray,
+                unselectedTextColor = TextGray,
                 indicatorColor = Color.Transparent
             )
         )
@@ -66,7 +69,7 @@ fun AppNavigationBar(navController: NavController) {
                         .size(42.dp)
                         .background(
                             if (currentRoute == "apply_advance" || currentRoute?.startsWith("loan") == true) 
-                                Color(0xFF00695C) else Color(0xFFE0E0E0), 
+                                PrimaryBlue else Color(0xFFE0E0E0), 
                             CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -75,16 +78,16 @@ fun AppNavigationBar(navController: NavController) {
                         Icons.Default.Payments, 
                         contentDescription = null, 
                         tint = if (currentRoute == "apply_advance" || currentRoute?.startsWith("loan") == true) 
-                            Color.White else Color.Gray,
+                            Color.White else TextGray,
                         modifier = Modifier.size(24.dp)
                     )
                 }
             },
             label = { 
                 Text(
-                    "Pay Day Loan", 
+                    "Pay Day", 
                     color = if (currentRoute == "apply_advance" || currentRoute?.startsWith("loan") == true) 
-                        Color(0xFF00695C) else Color.Gray
+                        PrimaryBlue else TextGray
                 ) 
             },
             selected = currentRoute == "apply_advance" || currentRoute?.startsWith("loan") == true,
@@ -104,8 +107,8 @@ fun AppNavigationBar(navController: NavController) {
             selected = false,
             onClick = {},
             colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
+                unselectedIconColor = TextGray,
+                unselectedTextColor = TextGray,
                 indicatorColor = Color.Transparent
             )
         )
@@ -115,8 +118,8 @@ fun AppNavigationBar(navController: NavController) {
             selected = false,
             onClick = {},
             colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray,
+                unselectedIconColor = TextGray,
+                unselectedTextColor = TextGray,
                 indicatorColor = Color.Transparent
             )
         )

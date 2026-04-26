@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import java.util.Locale
+import com.example.paydayloan.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,13 +39,13 @@ fun LoanSummaryScreen(
                         "Loan Summary",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A237E)
+                            color = TextDark
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
@@ -55,35 +56,34 @@ fun LoanSummaryScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF8F9FA))
-                .padding(16.dp),
+                .background(BackgroundBlue)
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Main Summary Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         "Requested Amount",
-                        color = Color.Gray,
+                        color = TextGray,
                         fontSize = 14.sp
                     )
                     Text(
-                        "৳ ${String.format(Locale.US, "%,.2f", requestedAmount)}",
-                        color = Color(0xFF00695C),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
+                        "৳ ${String.format(Locale.US, "%,.0f", requestedAmount)}",
+                        color = PrimaryBlue,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.ExtraBold
                     )
                     
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 0.5.dp)
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = BackgroundBlue)
                     
-                    SummaryRow("Monthly Salary", 30000.0) // Dummy
-                    SummaryRow("Eligible Limit (80%)", 24000.0) // Dummy
                     SummaryRow("Requested Amount", requestedAmount)
-                    SummaryRow("Service Charge (2% or 200)", serviceCharge)
+                    SummaryRow("Service Charge (2%)", serviceCharge)
                     
                     Spacer(modifier = Modifier.height(12.dp))
                     
@@ -94,14 +94,14 @@ fun LoanSummaryScreen(
                         Text(
                             "You Will Receive",
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00695C),
+                            color = PrimaryBlue,
                             fontSize = 16.sp
                         )
                         Text(
-                            "৳ ${String.format(Locale.US, "%,.2f", netAmount)}",
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF00695C),
-                            fontSize = 16.sp
+                            "৳ ${String.format(Locale.US, "%,.0f", netAmount)}",
+                            fontWeight = FontWeight.ExtraBold,
+                            color = PrimaryBlue,
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -110,10 +110,11 @@ fun LoanSummaryScreen(
             // Details Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(20.dp)) {
                     DetailInfoRow("Repayment Date", "30 May 2024")
                     DetailInfoRow("Repayment Source", "Salary Account")
                     DetailInfoRow("Purpose", purpose)
@@ -122,8 +123,8 @@ fun LoanSummaryScreen(
 
             // Info Warning Box
             Surface(
-                color = Color(0xFFFFF3E0),
-                shape = RoundedCornerShape(12.dp),
+                color = WarningOrange.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
@@ -133,14 +134,14 @@ fun LoanSummaryScreen(
                     Icon(
                         Icons.Outlined.Info,
                         contentDescription = null,
-                        tint = Color(0xFFE65100),
+                        tint = WarningOrange,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Your request will be sent to your employer for approval. After approval, amount will be disbursed to your account.",
+                        text = "Your request will be sent to your employer for approval. After approval, the amount will be disbursed to your account.",
                         fontSize = 13.sp,
-                        color = Color(0xFFE65100),
+                        color = WarningOrange,
                         lineHeight = 18.sp
                     )
                 }
@@ -155,22 +156,22 @@ fun LoanSummaryScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00695C)),
-                shape = RoundedCornerShape(12.dp)
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Submit Request", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Submit Request", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
             Text(
                 text = buildAnnotatedString {
                     append("By tapping Submit, you agree to the ")
-                    withStyle(style = SpanStyle(color = Color(0xFF00695C), fontWeight = FontWeight.Bold)) {
-                        append("terms and\nconditions")
+                    withStyle(style = SpanStyle(color = PrimaryBlue, fontWeight = FontWeight.Bold)) {
+                        append("terms and conditions")
                     }
                     append(" of Pay Day Loan.")
                 },
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = TextGray,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -186,11 +187,12 @@ fun SummaryRow(label: String, amount: Double) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = Color.Gray, fontSize = 14.sp)
+        Text(label, color = TextGray, fontSize = 14.sp)
         Text(
-            "৳ ${String.format(Locale.US, "%,.2f", amount)}",
-            color = Color.Black,
-            fontSize = 14.sp
+            "৳ ${String.format(Locale.US, "%,.0f", amount)}",
+            color = TextDark,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }
@@ -204,11 +206,12 @@ fun DetailInfoRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Text(label, color = Color.Gray, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(label, color = TextGray, fontSize = 14.sp, modifier = Modifier.weight(1f))
         Text(
             value,
-            color = Color.Black,
+            color = TextDark,
             fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
             textAlign = TextAlign.End,
             modifier = Modifier.weight(1.5f)
         )

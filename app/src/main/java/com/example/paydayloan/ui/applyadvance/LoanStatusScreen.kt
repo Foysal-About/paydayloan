@@ -24,6 +24,7 @@ import com.example.paydayloan.Loan
 import com.example.paydayloan.LoanStatus
 import java.util.Locale
 
+import com.example.paydayloan.ui.theme.*
 import com.example.paydayloan.ui.components.AppNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,13 +49,13 @@ fun LoanStatusScreen(navController: NavController) {
                         "Loan Status",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A237E)
+                            color = TextDark
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
@@ -68,16 +69,17 @@ fun LoanStatusScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(Color(0xFFF8F9FA))
+                .background(BackgroundBlue)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Header Status Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF7F0))
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
@@ -86,86 +88,82 @@ fun LoanStatusScreen(navController: NavController) {
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            "Pending Employer Approval",
-                            color = Color(0xFFE67E22),
+                            "Pending Approval",
+                            color = WarningOrange,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp
+                            fontSize = 18.sp
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            "Your request is waiting for approval from your employer.",
-                            color = Color.Gray,
+                            "Waiting for your employer to approve the request.",
+                            color = TextGray,
                             fontSize = 13.sp,
                             lineHeight = 18.sp
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "Requested on ${loan.requestDate}",
-                            color = Color.Gray,
-                            fontSize = 12.sp
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Surface(
+                            color = BackgroundBlue,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text(
+                                "ID: ${loan.id}",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TextGray
+                            )
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(56.dp)
+                            .background(WarningOrange.copy(alpha = 0.1f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Schedule,
+                            contentDescription = null,
+                            tint = WarningOrange,
+                            modifier = Modifier.size(32.dp)
                         )
                     }
-                    Icon(
-                        imageVector = Icons.Default.Schedule,
-                        contentDescription = null,
-                        tint = Color(0xFFE67E22),
-                        modifier = Modifier.size(48.dp)
-                    )
                 }
             }
 
             // Request Details Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Request Details", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Transaction Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                    Spacer(modifier = Modifier.height(16.dp))
                     
-                    StatusDetailRow("Requested Amount", "৳ ${String.format(Locale.US, "%,.2f", loan.amount)}")
-                    StatusDetailRow("Service Charge", "৳ ${String.format(Locale.US, "%,.2f", loan.serviceCharge)}")
+                    StatusDetailRow("Requested Amount", "৳ ${String.format(Locale.US, "%,.0f", loan.amount)}")
+                    StatusDetailRow("Service Charge", "৳ ${String.format(Locale.US, "%,.0f", loan.serviceCharge)}")
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BackgroundBlue)
                     StatusDetailRow(
-                        "You Will Receive", 
-                        "৳ ${String.format(Locale.US, "%,.2f", loan.netAmount)}", 
-                        isGreen = true
+                        "Net Disbursement", 
+                        "৳ ${String.format(Locale.US, "%,.0f", loan.netAmount)}", 
+                        isHighlight = true
                     )
-                    StatusDetailRow("Repayment Date", loan.repaymentDate)
-                    
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Status", color = Color.Gray, fontSize = 14.sp)
-                        Surface(
-                            color = Color(0xFFFFF3E0),
-                            shape = RoundedCornerShape(16.dp)
-                        ) {
-                            Text(
-                                "Pending Approval",
-                                color = Color(0xFFE67E22),
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
-                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    StatusDetailRow("Expected Repayment", loan.repaymentDate)
                 }
             }
 
             // Status Timeline Card
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Status Timeline", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text("Tracking", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                    Spacer(modifier = Modifier.height(20.dp))
                     
                     TimelineItem(
                         title = "Request Submitted",
@@ -176,7 +174,7 @@ fun LoanStatusScreen(navController: NavController) {
                     )
                     TimelineItem(
                         title = "Employer Approval",
-                        subtitle = "Pending",
+                        subtitle = "Processing...",
                         isFirst = false,
                         isLast = false,
                         status = TimelineStatus.PENDING
@@ -189,7 +187,7 @@ fun LoanStatusScreen(navController: NavController) {
                         status = TimelineStatus.PENDING
                     )
                     TimelineItem(
-                        title = "Repayment",
+                        title = "Salary Repayment",
                         subtitle = "Pending",
                         isFirst = false,
                         isLast = true,
@@ -201,17 +199,14 @@ fun LoanStatusScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Cancel Button
-            OutlinedButton(
+            TextButton(
                 onClick = { /* TODO */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFF00695C)),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF00695C))
+                modifier = Modifier.fillMaxWidth(),
             ) {
-                Text("Cancel Request", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text("Cancel Request", color = Color.Red.copy(alpha = 0.7f), fontSize = 14.sp, fontWeight = FontWeight.Medium)
             }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -221,19 +216,19 @@ enum class TimelineStatus {
 }
 
 @Composable
-fun StatusDetailRow(label: String, value: String, isGreen: Boolean = false) {
+fun StatusDetailRow(label: String, value: String, isHighlight: Boolean = false) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = Color.Gray, fontSize = 14.sp)
+        Text(label, color = TextGray, fontSize = 14.sp)
         Text(
             value,
-            color = if (isGreen) Color(0xFF00695C) else Color.Black,
+            color = if (isHighlight) PrimaryBlue else TextDark,
             fontSize = 14.sp,
-            fontWeight = if (isGreen) FontWeight.Bold else FontWeight.Normal
+            fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium
         )
     }
 }
@@ -253,50 +248,40 @@ fun TimelineItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(24.dp)
+                    .size(16.dp)
                     .background(
-                        color = if (status == TimelineStatus.COMPLETED) Color(0xFFE67E22) else Color.White,
+                        color = if (status == TimelineStatus.COMPLETED) PrimaryBlue else Color.White,
                         shape = CircleShape
                     )
                     .border(
                         width = 2.dp,
-                        color = if (status == TimelineStatus.COMPLETED) Color(0xFFE67E22) else Color(0xFFD1D5DB),
+                        color = if (status == TimelineStatus.COMPLETED) PrimaryBlue else Color(0xFFD1D5DB),
                         shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (status == TimelineStatus.COMPLETED) {
-                    Icon(
-                        Icons.Default.Schedule,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(14.dp)
                     )
-                }
-            }
+            )
             if (!isLast) {
                 Box(
                     modifier = Modifier
                         .width(2.dp)
-                        .height(40.dp)
-                        .background(Color(0xFFD1D5DB))
+                        .height(36.dp)
+                        .background(if (status == TimelineStatus.COMPLETED) PrimaryBlue.copy(alpha = 0.3f) else Color(0xFFD1D5DB))
                 )
             }
         }
         
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         
-        Column(modifier = Modifier.padding(bottom = if (isLast) 0.dp else 24.dp)) {
+        Column(modifier = Modifier.padding(bottom = if (isLast) 0.dp else 20.dp)) {
             Text(
                 title,
-                fontWeight = FontWeight.Bold,
+                fontWeight = if (status == TimelineStatus.COMPLETED) FontWeight.Bold else FontWeight.Medium,
                 fontSize = 14.sp,
-                color = if (status == TimelineStatus.COMPLETED) Color(0xFF1A237E) else Color.Gray
+                color = if (status == TimelineStatus.COMPLETED) TextDark else TextGray
             )
             Text(
                 subtitle,
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = TextGray
             )
         }
     }
