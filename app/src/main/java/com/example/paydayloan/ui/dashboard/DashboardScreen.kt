@@ -11,29 +11,45 @@ import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import java.util.Locale
-import com.example.paydayloan.Employee
-import com.example.paydayloan.Loan
 import com.example.paydayloan.ui.components.AppNavigationBar
+import com.example.paydayloan.api.model.EmployeeDashboardDTO
+import com.example.paydayloan.api.model.LoanRequestDTO
+import com.example.paydayloan.api.model.ActiveLoanDTO
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 import com.example.paydayloan.ui.theme.PrimaryBlue
 import com.example.paydayloan.ui.theme.SecondaryBlue
 import com.example.paydayloan.ui.theme.TextDark
 import com.example.paydayloan.ui.theme.TextGray
 import com.example.paydayloan.ui.theme.BackgroundBlue
+import com.example.paydayloan.ui.theme.WarningOrange
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController, employee: Employee) {
+fun DashboardScreen(
+    navController: NavController,
+    viewModel: DashboardViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadDashboard(1L) // Hardcoded employee ID for now
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -63,101 +79,206 @@ fun DashboardScreen(navController: NavController, employee: Employee) {
             AppNavigationBar(navController)
         }
     ) { padding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .background(BackgroundBlue)
-                .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item { Spacer(modifier = Modifier.height(10.dp)) }
-
-            // Welcome text
-            item {
-                Column {
+            when (val state = uiState) {
+                is DashboardUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                is DashboardUiState.Error -> {
                     Text(
-                        "Hello, ${employee.name.split(" ")[0]}!",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = TextDark
-                        )
-                    )
-                    Text(
-                        "Track your salary advance and limits",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextGray
+                        text = state.message,
+                        color = Color.Red,
+                        modifier = Modifier.align(Alignment.Center).padding(20.dp),
+                        textAlign = TextAlign.Center
                     )
                 }
-            }
+                is DashboardUiState.Success -> {
+                    val data = state.data
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        item { Spacer(modifier = Modifier.height(10.dp)) }
 
-            // Main Eligibility Card
-            item {
-                EligibilityCard(employee.eligibleAmount)
-            }
+                        // Welcome text
+                        item {
+                            Column {
+                                Text(
+                                    "Hello!",
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = TextDark
+                                    )
+                                )
+                                Text(
+                                    "Track your salary advance and limits",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextGray
+                                )
+                            }
+                        }
 
-            // Salary and Limit Info Cards
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    InfoCard(
-                        title = "Monthly Salary",
-                        amount = employee.salary,
-                        icon = Icons.Default.Payments,
-                        modifier = Modifier.weight(1f)
-                    )
-                    InfoCard(
-                        title = "Available Limit",
-                        amount = employee.availableLimit,
-                        icon = Icons.AutoMirrored.Filled.TrendingUp,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
+                        // Main Eligibility Card
+                        item {
+                            EligibilityCard(data.eligibleAmount)
+                        }
 
-            // Active Loan Card
-            item {
-                ActiveLoanCard(employee.activeLoan)
-            }
+                        // Salary and Limit Info Cards
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                InfoCard(
+                                    title = "Monthly Salary",
+                                    amount = data.monthlySalary,
+                                    icon = Icons.Default.Payments,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                InfoCard(
+                                    title = "Available Limit",
+                                    amount = data.availableLimit,
+                                    icon = Icons.AutoMirrored.Filled.TrendingUp,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                        }
 
-            // Recent Loans Section
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "Recent History",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                    TextButton(onClick = { /* TODO */ }) {
-                        Text("View All", color = PrimaryBlue)
+                        // Active Loan Card
+                        item {
+                            ActiveLoanCardFromDTO(data.activeLoan)
+                        }
+
+                        // Recent Loans Section
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    "Recent History",
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                )
+                                TextButton(onClick = { /* TODO */ }) {
+                                    Text("View All", color = PrimaryBlue)
+                                }
+                            }
+                        }
+
+                        items(data.loanHistory.take(2)) { loan ->
+                            RecentLoanItemFromDTO(loan)
+                        }
+
+                        item {
+                            Button(
+                                onClick = { navController.navigate("apply_advance") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            ) {
+                                Text("Apply for Advance", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        item { Spacer(modifier = Modifier.height(24.dp)) }
                     }
                 }
             }
+        }
+    }
+}
 
-            items(employee.lastLoanHistory.take(2)) { loan ->
-                RecentLoanItem(loan)
-            }
-
-            item {
-                Button(
-                    onClick = { navController.navigate("apply_advance") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                ) {
-                    Text("Apply for Advance", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+@Composable
+fun ActiveLoanCardFromDTO(activeLoan: ActiveLoanDTO?) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                Spacer(modifier = Modifier.height(8.dp))
+                if (activeLoan == null) {
+                    Text("No ongoing loans", color = PrimaryBlue, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Apply today for an instant advance.", color = TextGray, fontSize = 12.sp)
+                } else {
+                    Text("৳ ${activeLoan.sanctionedAmount}", color = PrimaryBlue, fontWeight = FontWeight.Bold)
+                    Text("Repayment: ${activeLoan.maturityDate}", color = TextGray, fontSize = 12.sp)
                 }
             }
+            Icon(
+                imageVector = Icons.Default.ArrowForwardIos,
+                contentDescription = null,
+                tint = TextGray.copy(alpha = 0.5f),
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
 
-            item { Spacer(modifier = Modifier.height(24.dp)) }
+@Composable
+fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .background(Color(0xFFE8F5E9), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
+                    Text(
+                        loan.purpose ?: "Salary Advance",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 15.sp,
+                        color = TextDark
+                    )
+                    Text(loan.requestDate ?: "", color = TextGray, fontSize = 12.sp)
+                }
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    "৳ ${String.format(Locale.US, "%,.0f", loan.requestedAmount)}",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp,
+                    color = TextDark
+                )
+                Text(
+                    loan.status ?: "PENDING",
+                    color = if (loan.status == "REPAID" || loan.status == "DISBURSED") Color(0xFF2E7D32) else WarningOrange,
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -253,90 +374,6 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
                 fontSize = 18.sp,
                 color = TextDark
             )
-        }
-    }
-}
-
-@Composable
-fun ActiveLoanCard(activeLoan: Loan?) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
-                Spacer(modifier = Modifier.height(8.dp))
-                if (activeLoan == null) {
-                    Text("No ongoing loans", color = PrimaryBlue, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("Apply today for an instant advance.", color = TextGray, fontSize = 12.sp)
-                } else {
-                    Text("৳ ${activeLoan.amount}", color = PrimaryBlue, fontWeight = FontWeight.Bold)
-                    Text("Repayment: ${activeLoan.repaymentDate}", color = TextGray, fontSize = 12.sp)
-                }
-            }
-            Icon(
-                imageVector = Icons.Default.ArrowForwardIos,
-                contentDescription = null,
-                tint = TextGray.copy(alpha = 0.5f),
-                modifier = Modifier.size(16.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun RecentLoanItem(loan: Loan) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(Color(0xFFE8F5E9), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        "Salary Advance",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
-                        color = TextDark
-                    )
-                    Text(loan.requestDate, color = TextGray, fontSize = 12.sp)
-                }
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    "৳ ${String.format(Locale.US, "%,.0f", loan.amount)}",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = TextDark
-                )
-                Text(
-                    "Repaid",
-                    color = Color(0xFF2E7D32),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
         }
     }
 }

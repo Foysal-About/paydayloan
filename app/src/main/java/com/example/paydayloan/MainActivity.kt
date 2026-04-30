@@ -15,6 +15,7 @@ import com.example.paydayloan.ui.applyadvance.ApplyAdvanceScreen
 import com.example.paydayloan.ui.dashboard.DashboardScreen
 import com.example.paydayloan.ui.applyadvance.LoanStatusScreen
 import com.example.paydayloan.ui.applyadvance.LoanSummaryScreen
+import com.example.paydayloan.ui.auth.LoginScreen
 import com.example.paydayloan.ui.theme.paydayloanTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,12 +25,15 @@ class MainActivity : ComponentActivity() {
         setContent {
             paydayloanTheme {
                 val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "dashboard") {
+                NavHost(navController = navController, startDestination = "login") {
+                    composable("login") {
+                        LoginScreen(navController)
+                    }
                     composable("dashboard") {
-                        DashboardScreen(navController, dummyEmployee)
+                        DashboardScreen(navController)
                     }
                     composable("apply_advance") {
-                        ApplyAdvanceScreen(navController, dummyEmployee)
+                        ApplyAdvanceScreen(navController)
                     }
                     composable("loan_summary/{amount}/{serviceCharge}/{netAmount}/{purpose}") { backStackEntry ->
                         val amount = backStackEntry.arguments?.getString("amount")?.toDoubleOrNull() ?: 0.0

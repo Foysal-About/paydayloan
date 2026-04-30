@@ -19,3 +19,5 @@ val TextDark = Color(0xFF263238)
 val TextGray = Color(0xFF78909C)
 val SuccessGreen = Color(0xFF43A047)
 val WarningOrange = Color(0xFFFB8C00)
+
+val TabBackground = Color(0xFFF0F2F5)
