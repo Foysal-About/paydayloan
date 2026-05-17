@@ -35,6 +35,8 @@ fun LoanSummaryScreen(
     serviceCharge: Double,
     netAmount: Double,
     purpose: String,
+    monthlySalary: Double,
+    eligibleAmount: Double,
     viewModel: LoanViewModel = viewModel()
 ) {
     val decodedPurpose = remember(purpose) {
@@ -66,20 +68,20 @@ fun LoanSummaryScreen(
                         "Loan Summary",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = TextDark
+                            color = CityTextDark
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(BackgroundBlue)) {
+        Box(modifier = Modifier.fillMaxSize().padding(padding).background(CityBackground)) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -93,41 +95,44 @@ fun LoanSummaryScreen(
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column(modifier = Modifier.padding(20.dp)) {
+                    Column(modifier = Modifier.padding(24.dp)) {
                         Text(
                             "Requested Amount",
-                            color = TextGray,
-                            fontSize = 14.sp
+                            color = CityTextGray,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
                         )
                         Text(
                             "৳ ${String.format(Locale.US, "%,.0f", requestedAmount)}",
-                            color = PrimaryBlue,
-                            fontSize = 28.sp,
+                            color = CityMaroon,
+                            fontSize = 32.sp,
                             fontWeight = FontWeight.ExtraBold
                         )
                         
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = BackgroundBlue)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp), color = CityBackground)
                         
-                        SummaryRow("Requested Amount", requestedAmount)
+                        SummaryRow("Monthly Salary", monthlySalary)
+                        SummaryRow("Eligible for Advance", eligibleAmount)
                         SummaryRow("Service Charge (2%)", serviceCharge)
                         
-                        Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
                                 "You Will Receive",
                                 fontWeight = FontWeight.Bold,
-                                color = PrimaryBlue,
+                                color = CityMaroon,
                                 fontSize = 16.sp
                             )
                             Text(
                                 "৳ ${String.format(Locale.US, "%,.0f", netAmount)}",
                                 fontWeight = FontWeight.ExtraBold,
-                                color = PrimaryBlue,
-                                fontSize = 18.sp
+                                color = CityMaroon,
+                                fontSize = 20.sp
                             )
                         }
                     }
@@ -149,7 +154,7 @@ fun LoanSummaryScreen(
 
                 // Info Warning Box
                 Surface(
-                    color = WarningOrange.copy(alpha = 0.1f),
+                    color = CityWarning.copy(alpha = 0.1f),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -160,14 +165,14 @@ fun LoanSummaryScreen(
                         Icon(
                             Icons.Outlined.Info,
                             contentDescription = null,
-                            tint = WarningOrange,
+                            tint = CityWarning,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(12.dp))
                         Text(
                             text = "Your request will be sent to your employer for approval. After approval, the amount will be disbursed to your account.",
                             fontSize = 13.sp,
-                            color = WarningOrange,
+                            color = CityTextDark,
                             lineHeight = 18.sp
                         )
                     }
@@ -182,7 +187,7 @@ fun LoanSummaryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
                     shape = RoundedCornerShape(16.dp),
                     enabled = uiState !is LoanUiState.Loading
                 ) {
@@ -196,15 +201,15 @@ fun LoanSummaryScreen(
                 Text(
                     text = buildAnnotatedString {
                         append("By tapping Submit, you agree to the ")
-                        withStyle(style = SpanStyle(color = PrimaryBlue, fontWeight = FontWeight.Bold)) {
+                        withStyle(style = SpanStyle(color = CityMaroon, fontWeight = FontWeight.Bold)) {
                             append("terms and conditions")
                         }
                         append(" of Pay Day Loan.")
                     },
                     fontSize = 12.sp,
-                    color = TextGray,
+                    color = CityTextGray,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                 )
             }
         }
@@ -219,10 +224,10 @@ fun SummaryRow(label: String, amount: Double) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = TextGray, fontSize = 14.sp)
+        Text(label, color = CityTextGray, fontSize = 14.sp)
         Text(
             "৳ ${String.format(Locale.US, "%,.0f", amount)}",
-            color = TextDark,
+            color = CityTextDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -238,10 +243,10 @@ fun DetailInfoRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Text(label, color = TextGray, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(label, color = CityTextGray, fontSize = 14.sp, modifier = Modifier.weight(1f))
         Text(
             value,
-            color = TextDark,
+            color = CityTextDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.End,

@@ -1,5 +1,6 @@
 package com.example.paydayloan.ui.applyadvance
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -59,29 +60,29 @@ fun ApplyAdvanceScreen(
                         "Apply for Advance",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = TextDark
+                            color = CityTextDark
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
                     }
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
         },
         bottomBar = {
             AppNavigationBar(navController)
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(BackgroundBlue)) {
+        Box(modifier = Modifier.fillMaxSize().padding(padding).background(CityBackground)) {
             when (val state = dashboardState) {
                 is DashboardUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = CityMaroon)
                 }
                 is DashboardUiState.Error -> {
-                    Text(state.message, color = Color.Red, modifier = Modifier.align(Alignment.Center))
+                    Text(state.message, color = CityError, modifier = Modifier.align(Alignment.Center))
                 }
                 is DashboardUiState.Success -> {
                     val data = state.data
@@ -89,7 +90,6 @@ fun ApplyAdvanceScreen(
                     val maxEligible = data.eligibleAmount
                     val availableLimit = data.availableLimit
 
-                    // For now, we use local calculation, but we could call loanViewModel.simulateLoan
                     val serviceCharge = if (amount > 0) maxOf(amount * 0.02, 200.0) else 0.0
                     val netAmount = if (amount > 0) amount - serviceCharge else 0.0
 
@@ -108,11 +108,11 @@ fun ApplyAdvanceScreen(
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(20.dp)) {
-                                Text("Your Eligibility", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                                Text("Your Eligibility", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
                                 Spacer(modifier = Modifier.height(16.dp))
                                 EligibilityRow("Monthly Salary", data.monthlySalary)
                                 EligibilityRow("Maximum Limit (80%)", maxEligible)
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = BackgroundBlue)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityBackground)
                                 EligibilityRow("Available to Withdraw", availableLimit, isHighlight = true)
                             }
                         }
@@ -123,7 +123,7 @@ fun ApplyAdvanceScreen(
                                 "Requested Amount",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
-                                color = TextDark
+                                color = CityTextDark
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             OutlinedTextField(
@@ -132,11 +132,11 @@ fun ApplyAdvanceScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                leadingIcon = { Text("৳", style = MaterialTheme.typography.titleLarge, color = PrimaryBlue) },
+                                leadingIcon = { Text("৳", style = MaterialTheme.typography.titleLarge, color = CityMaroon) },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     unfocusedContainerColor = Color.White,
                                     focusedContainerColor = Color.White,
-                                    focusedBorderColor = PrimaryBlue,
+                                    focusedBorderColor = CityMaroon,
                                     unfocusedBorderColor = Color.Transparent
                                 )
                             )
@@ -144,7 +144,7 @@ fun ApplyAdvanceScreen(
                             Text(
                                 "Min ৳1,000 • Max ৳${String.format(Locale.US, "%,.0f", availableLimit)}",
                                 fontSize = 12.sp,
-                                color = TextGray
+                                color = CityTextGray
                             )
                         }
 
@@ -154,7 +154,7 @@ fun ApplyAdvanceScreen(
                                 "Select Purpose",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
-                                color = TextDark
+                                color = CityTextDark
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Box {
@@ -169,7 +169,7 @@ fun ApplyAdvanceScreen(
                                             Icons.Default.ArrowDropDown,
                                             "Dropdown",
                                             Modifier.clickable { expanded = true },
-                                            tint = PrimaryBlue
+                                            tint = CityMaroon
                                         )
                                     },
                                     colors = OutlinedTextFieldDefaults.colors(
@@ -200,14 +200,15 @@ fun ApplyAdvanceScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(20.dp),
-                            colors = CardDefaults.cardColors(containerColor = PrimaryBlue.copy(alpha = 0.05f))
+                            colors = CardDefaults.cardColors(containerColor = CityMaroon.copy(alpha = 0.03f)),
+                            border = BorderStroke(1.dp, CityMaroon.copy(alpha = 0.1f))
                         ) {
                             Column(modifier = Modifier.padding(20.dp)) {
                                 Text(
                                     "Summary & Charges",
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 15.sp,
-                                    color = TextDark
+                                    color = CityTextDark
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 ChargeRow("Requested Amount", amount)
@@ -216,20 +217,21 @@ fun ApplyAdvanceScreen(
                                     amount = serviceCharge,
                                     hasInfo = true
                                 )
-                                Spacer(modifier = Modifier.height(12.dp))
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityMaroon.copy(alpha = 0.05f))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
                                         "Net Disbursement",
                                         fontWeight = FontWeight.Bold,
-                                        color = PrimaryBlue
+                                        color = CityMaroon
                                     )
                                     Text(
                                         "৳ ${String.format(Locale.US, "%,.0f", netAmount)}",
                                         fontWeight = FontWeight.ExtraBold,
-                                        color = PrimaryBlue,
+                                        color = CityMaroon,
                                         fontSize = 18.sp
                                     )
                                 }
@@ -240,7 +242,8 @@ fun ApplyAdvanceScreen(
                         Surface(
                             color = Color.White,
                             shape = RoundedCornerShape(16.dp),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, CitySuccess.copy(alpha = 0.1f))
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -249,29 +252,29 @@ fun ApplyAdvanceScreen(
                                 Icon(
                                     Icons.Outlined.Shield,
                                     contentDescription = null,
-                                    tint = SuccessGreen,
+                                    tint = CitySuccess,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
                                     text = "Secure repayment from salary on 30 May 2024",
                                     fontSize = 12.sp,
-                                    color = TextGray
+                                    color = CityTextGray
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Button(
                             onClick = {
                                 val encodedPurpose = URLEncoder.encode(selectedPurpose, StandardCharsets.UTF_8.toString())
-                                navController.navigate("loan_summary/$amount/$serviceCharge/$netAmount/$encodedPurpose")
+                                navController.navigate("loan_summary/$amount/$serviceCharge/$netAmount/$encodedPurpose/${data.monthlySalary}/${data.eligibleAmount}")
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(56.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                            colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
                             shape = RoundedCornerShape(16.dp),
                             enabled = amount >= 1000 && amount <= availableLimit
                         ) {
@@ -296,13 +299,13 @@ fun EligibilityRow(label: String, amount: Double, isHighlight: Boolean = false) 
     ) {
         Text(
             label,
-            color = if (isHighlight) PrimaryBlue else TextGray,
+            color = if (isHighlight) CityMaroon else CityTextGray,
             fontSize = 14.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             "৳ ${String.format(Locale.US, "%,.0f", amount)}",
-            color = if (isHighlight) PrimaryBlue else TextDark,
+            color = if (isHighlight) CityMaroon else CityTextDark,
             fontSize = 14.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium
         )
@@ -319,20 +322,20 @@ fun ChargeRow(label: String, amount: Double, hasInfo: Boolean = false) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(label, color = TextGray, fontSize = 14.sp)
+            Text(label, color = CityTextGray, fontSize = 14.sp)
             if (hasInfo) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Icon(
                     Icons.Default.Info,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
-                    tint = TextGray
+                    tint = CityTextGray
                 )
             }
         }
         Text(
             "৳ ${String.format(Locale.US, "%,.0f", amount)}",
-            color = TextDark,
+            color = CityTextDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )

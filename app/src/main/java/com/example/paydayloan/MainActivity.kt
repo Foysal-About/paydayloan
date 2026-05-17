@@ -35,12 +35,14 @@ class MainActivity : ComponentActivity() {
                     composable("apply_advance") {
                         ApplyAdvanceScreen(navController)
                     }
-                    composable("loan_summary/{amount}/{serviceCharge}/{netAmount}/{purpose}") { backStackEntry ->
+                    composable("loan_summary/{amount}/{serviceCharge}/{netAmount}/{purpose}/{salary}/{eligibility}") { backStackEntry ->
                         val amount = backStackEntry.arguments?.getString("amount")?.toDoubleOrNull() ?: 0.0
                         val serviceCharge = backStackEntry.arguments?.getString("serviceCharge")?.toDoubleOrNull() ?: 0.0
                         val netAmount = backStackEntry.arguments?.getString("netAmount")?.toDoubleOrNull() ?: 0.0
                         val purpose = backStackEntry.arguments?.getString("purpose") ?: ""
-                        LoanSummaryScreen(navController, amount, serviceCharge, netAmount, purpose)
+                        val salary = backStackEntry.arguments?.getString("salary")?.toDoubleOrNull() ?: 0.0
+                        val eligibility = backStackEntry.arguments?.getString("eligibility")?.toDoubleOrNull() ?: 0.0
+                        LoanSummaryScreen(navController, amount, serviceCharge, netAmount, purpose, salary, eligibility)
                     }
                     composable("loan_status") {
                         LoanStatusScreen(navController)

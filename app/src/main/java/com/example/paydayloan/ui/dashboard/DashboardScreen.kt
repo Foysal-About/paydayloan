@@ -31,12 +31,7 @@ import com.example.paydayloan.api.model.ActiveLoanDTO
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-import com.example.paydayloan.ui.theme.PrimaryBlue
-import com.example.paydayloan.ui.theme.SecondaryBlue
-import com.example.paydayloan.ui.theme.TextDark
-import com.example.paydayloan.ui.theme.TextGray
-import com.example.paydayloan.ui.theme.BackgroundBlue
-import com.example.paydayloan.ui.theme.WarningOrange
+import com.example.paydayloan.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,24 +47,24 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Pay Day",
+                        "City PayDay",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.ExtraBold,
-                            color = PrimaryBlue
+                            color = CityMaroon
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { /* TODO */ }) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = PrimaryBlue)
+                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = CityMaroon)
                     }
                 },
                 actions = {
                     IconButton(onClick = { /* TODO */ }) {
-                        Icon(Icons.Default.NotificationsNone, contentDescription = "Notifications", tint = TextGray)
+                        Icon(Icons.Default.NotificationsNone, contentDescription = "Notifications", tint = CityTextGray)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
@@ -83,16 +78,16 @@ fun DashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(BackgroundBlue)
+                .background(CityBackground)
         ) {
             when (val state = uiState) {
                 is DashboardUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = CityMaroon)
                 }
                 is DashboardUiState.Error -> {
                     Text(
                         text = state.message,
-                        color = Color.Red,
+                        color = CityError,
                         modifier = Modifier.align(Alignment.Center).padding(20.dp),
                         textAlign = TextAlign.Center
                     )
@@ -106,24 +101,6 @@ fun DashboardScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         item { Spacer(modifier = Modifier.height(10.dp)) }
-
-                        // Welcome text
-                        item {
-                            Column {
-                                Text(
-                                    "Hello!",
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = TextDark
-                                    )
-                                )
-                                Text(
-                                    "Track your salary advance and limits",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextGray
-                                )
-                            }
-                        }
 
                         // Main Eligibility Card
                         item {
@@ -142,6 +119,7 @@ fun DashboardScreen(
                                     icon = Icons.Default.Payments,
                                     modifier = Modifier.weight(1f)
                                 )
+
                                 InfoCard(
                                     title = "Available Limit",
                                     amount = data.availableLimit,
@@ -165,10 +143,13 @@ fun DashboardScreen(
                             ) {
                                 Text(
                                     "Recent History",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = CityTextDark
+                                    )
                                 )
                                 TextButton(onClick = { /* TODO */ }) {
-                                    Text("View All", color = PrimaryBlue)
+                                    Text("View All", color = CityMaroon, fontWeight = FontWeight.Bold)
                                 }
                             }
                         }
@@ -183,7 +164,7 @@ fun DashboardScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
+                                colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
                                 shape = RoundedCornerShape(16.dp),
                                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
                             ) {
@@ -212,20 +193,20 @@ fun ActiveLoanCardFromDTO(activeLoan: ActiveLoanDTO?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = TextDark)
+                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
                 Spacer(modifier = Modifier.height(8.dp))
                 if (activeLoan == null) {
-                    Text("No ongoing loans", color = PrimaryBlue, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("Apply today for an instant advance.", color = TextGray, fontSize = 12.sp)
+                    Text("No ongoing loans", color = CityMaroon, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    Text("Apply today for an instant advance.", color = CityTextGray, fontSize = 12.sp)
                 } else {
-                    Text("৳ ${activeLoan.sanctionedAmount}", color = PrimaryBlue, fontWeight = FontWeight.Bold)
-                    Text("Repayment: ${activeLoan.maturityDate}", color = TextGray, fontSize = 12.sp)
+                    Text("৳ ${activeLoan.sanctionedAmount}", color = CityMaroon, fontWeight = FontWeight.Bold)
+                    Text("Repayment: ${activeLoan.maturityDate}", color = CityTextGray, fontSize = 12.sp)
                 }
             }
             Icon(
                 imageVector = Icons.Default.ArrowForwardIos,
                 contentDescription = null,
-                tint = TextGray.copy(alpha = 0.5f),
+                tint = CityTextGray.copy(alpha = 0.5f),
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -249,10 +230,10 @@ fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .background(Color(0xFFE8F5E9), CircleShape),
+                        .background(CitySuccess.copy(alpha = 0.1f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF2E7D32), modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.Check, contentDescription = null, tint = CitySuccess, modifier = Modifier.size(20.dp))
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
@@ -260,9 +241,9 @@ fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
                         loan.purpose ?: "Salary Advance",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = TextDark
+                        color = CityTextDark
                     )
-                    Text(loan.requestDate ?: "", color = TextGray, fontSize = 12.sp)
+                    Text(loan.requestDate ?: "", color = CityTextGray, fontSize = 12.sp)
                 }
             }
             Column(horizontalAlignment = Alignment.End) {
@@ -270,11 +251,11 @@ fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
                     "৳ ${String.format(Locale.US, "%,.0f", loan.requestedAmount)}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = TextDark
+                    color = CityTextDark
                 )
                 Text(
                     loan.status ?: "PENDING",
-                    color = if (loan.status == "REPAID" || loan.status == "DISBURSED") Color(0xFF2E7D32) else WarningOrange,
+                    color = if (loan.status == "REPAID" || loan.status == "DISBURSED") CitySuccess else CityWarning,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -288,13 +269,13 @@ fun EligibilityCard(amount: Double) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(
             modifier = Modifier
                 .background(
                     brush = Brush.linearGradient(
-                        colors = listOf(PrimaryBlue, SecondaryBlue)
+                        colors = listOf(CityMaroon, CityMaroonDark)
                     )
                 )
                 .padding(24.dp)
@@ -325,11 +306,11 @@ fun EligibilityCard(amount: Double) {
                         tint = Color.White.copy(alpha = 0.2f)
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 LinearProgressIndicator(
                     progress = { 0.8f },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(3.dp)),
-                    color = Color.White,
+                    modifier = Modifier.fillMaxWidth().height(8.dp).background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp)),
+                    color = CityGold, // Use gold for the progress bar
                     trackColor = Color.Transparent,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -352,27 +333,36 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
-            Box(
-                modifier = Modifier
-                    .size(36.dp)
-                    .background(PrimaryBlue.copy(alpha = 0.1f), CircleShape),
-                contentAlignment = Alignment.Center
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = PrimaryBlue,
-                    modifier = Modifier.size(20.dp)
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(CityMaroon.copy(alpha = 0.1f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = CityMaroon,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+                Text(
+                    title,
+                    color = CityTextGray,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(title, color = TextGray, fontSize = 12.sp, fontWeight = FontWeight.Medium)
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 "৳ ${String.format(Locale.US, "%,.0f", amount)}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = TextDark
+                color = CityTextDark
             )
         }
     }
