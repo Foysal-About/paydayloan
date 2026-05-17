@@ -27,6 +27,7 @@ import com.example.paydayloan.ui.components.AppNavigationBar
 @Composable
 fun LoanStatusScreen(navController: NavController) {
     Scaffold(
+        containerColor = CityBackground,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -45,181 +46,177 @@ fun LoanStatusScreen(navController: NavController) {
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        },
-        bottomBar = {
-            AppNavigationBar(navController)
         }
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(CityBackground)
-                .verticalScroll(rememberScrollState())
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Premium Header Status Card with City Bank Maroon branding
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        Box(modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(CityMaroon.copy(alpha = 0.08f), Color.White)
-                            )
-                        )
-                        .padding(20.dp)
+                // Premium Header Status Card with City Bank Maroon branding
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(CityMaroon.copy(alpha = 0.08f), Color.White)
+                                )
+                            )
+                            .padding(20.dp)
                     ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                "Pending Employer Approval",
-                                color = CityMaroon,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Your request is waiting for approval from your employer.",
-                                color = CityTextDark,
-                                fontSize = 13.sp,
-                                lineHeight = 18.sp
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                "Requested on 18 May 2024, 10:30 AM",
-                                color = CityTextGray,
-                                fontSize = 12.sp
-                            )
-                        }
-                        Surface(
-                            shape = CircleShape,
-                            color = CityMaroon.copy(alpha = 0.1f),
-                            modifier = Modifier.size(56.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.Schedule,
-                                    contentDescription = null,
-                                    tint = CityMaroon,
-                                    modifier = Modifier.size(28.dp)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    "Pending Employer Approval",
+                                    color = CityMaroon,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 16.sp
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    "Your request is waiting for approval from your employer.",
+                                    color = CityTextDark,
+                                    fontSize = 13.sp,
+                                    lineHeight = 18.sp
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    "Requested on 18 May 2024, 10:30 AM",
+                                    color = CityTextGray,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Surface(
+                                shape = CircleShape,
+                                color = CityMaroon.copy(alpha = 0.1f),
+                                modifier = Modifier.size(56.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Default.Schedule,
+                                        contentDescription = null,
+                                        tint = CityMaroon,
+                                        modifier = Modifier.size(28.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Request Details Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Request Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        StatusRow("Requested Amount", "৳ 20,000.00")
+                        StatusRow("Service Charge", "৳ 400.00")
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityBackground)
+                        StatusRow("You Will Receive", "৳ 19,600.00", isHighlight = true)
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        StatusRow("Repayment Date", "30 May 2024")
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Status", color = CityTextGray, fontSize = 14.sp)
+                            Surface(
+                                color = CityWarning.copy(alpha = 0.15f),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text(
+                                    "Pending Approval",
+                                    color = CityWarning,
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
                         }
                     }
                 }
-            }
 
-            // Request Details Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text("Request Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    StatusRow("Requested Amount", "৳ 20,000.00")
-                    StatusRow("Service Charge", "৳ 400.00")
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityBackground)
-                    StatusRow("You Will Receive", "৳ 19,600.00", isHighlight = true)
-                    
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    StatusRow("Repayment Date", "30 May 2024")
-                    
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Status", color = CityTextGray, fontSize = 14.sp)
-                        Surface(
-                            color = CityWarning.copy(alpha = 0.15f),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                "Pending Approval",
-                                color = CityWarning,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                // Status Timeline Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("Status Timeline", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
+                        Spacer(modifier = Modifier.height(20.dp))
+                        
+                        TimelineItem(
+                            title = "Request Submitted",
+                            subtitle = "18 May 2024, 10:30 AM",
+                            isFirst = true,
+                            isLast = false,
+                            isActive = true,
+                            showClock = true
+                        )
+                        TimelineItem(
+                            title = "Employer Approval",
+                            subtitle = "Pending",
+                            isFirst = false,
+                            isLast = false,
+                            isActive = false
+                        )
+                        TimelineItem(
+                            title = "Disbursement",
+                            subtitle = "Pending",
+                            isFirst = false,
+                            isLast = false,
+                            isActive = false
+                        )
+                        TimelineItem(
+                            title = "Repayment",
+                            subtitle = "Pending",
+                            isFirst = false,
+                            isLast = true,
+                            isActive = false
+                        )
                     }
                 }
-            }
 
-            // Status Timeline Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text("Status Timeline", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
-                    Spacer(modifier = Modifier.height(20.dp))
-                    
-                    TimelineItem(
-                        title = "Request Submitted",
-                        subtitle = "18 May 2024, 10:30 AM",
-                        isFirst = true,
-                        isLast = false,
-                        isActive = true,
-                        showClock = true
-                    )
-                    TimelineItem(
-                        title = "Employer Approval",
-                        subtitle = "Pending",
-                        isFirst = false,
-                        isLast = false,
-                        isActive = false
-                    )
-                    TimelineItem(
-                        title = "Disbursement",
-                        subtitle = "Pending",
-                        isFirst = false,
-                        isLast = false,
-                        isActive = false
-                    )
-                    TimelineItem(
-                        title = "Repayment",
-                        subtitle = "Pending",
-                        isFirst = false,
-                        isLast = true,
-                        isActive = false
-                    )
+                Button(
+                    onClick = { /* Handle cancel */ },
+                    modifier = Modifier.fillMaxWidth().height(54.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = CityMaroon
+                    ),
+                    border = BorderStroke(1.dp, CityMaroon.copy(alpha = 0.3f))
+                ) {
+                    Text("Cancel Request", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
+                
+                // Extra space at bottom so content isn't hidden by the floating nav bar
+                Spacer(modifier = Modifier.height(100.dp))
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Button(
-                onClick = { /* Handle cancel */ },
-                modifier = Modifier.fillMaxWidth().height(54.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = CityMaroon
-                ),
-                border = BorderStroke(1.dp, CityMaroon.copy(alpha = 0.3f))
-            ) {
-                Text("Cancel Request", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            }
-            
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

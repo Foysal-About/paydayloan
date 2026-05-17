@@ -46,6 +46,7 @@ fun DashboardScreen(
     }
 
     Scaffold(
+        containerColor = CityBackground,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -69,16 +70,12 @@ fun DashboardScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        },
-        bottomBar = {
-            AppNavigationBar(navController)
         }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .background(CityBackground)
+                .padding(top = padding.calculateTopPadding())
         ) {
             when (val state = uiState) {
                 is DashboardUiState.Loading -> {
@@ -172,7 +169,8 @@ fun DashboardScreen(
                             }
                         }
 
-                        item { Spacer(modifier = Modifier.height(24.dp)) }
+                        // Extra space at bottom so content isn't hidden by the floating nav bar
+                        item { Spacer(modifier = Modifier.height(100.dp)) }
                     }
                 }
             }

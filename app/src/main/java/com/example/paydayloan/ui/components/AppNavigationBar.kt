@@ -1,143 +1,197 @@
 package com.example.paydayloan.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.HeadsetMic
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-
 import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.CityMaroon
-import com.example.paydayloan.ui.theme.CityTextGray
 import com.example.paydayloan.ui.theme.CityTextDark
+import com.example.paydayloan.ui.theme.CityTextGray
 
 @Composable
-fun AppNavigationBar(navController: NavController) {
+fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
 
-    NavigationBar(
-        containerColor = Color.White,
-        tonalElevation = 12.dp,
-        modifier = Modifier.background(Color.White)
+    // Container for the glass-effect floating capsule
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(Color.Transparent) // Explicitly transparent
+            .padding(start = 24.dp, end = 24.dp, bottom = 32.dp, top = 16.dp),
+        contentAlignment = Alignment.Center
     ) {
-        // Home
-        NavigationBarItem(
-            icon = { Icon(painterResource(id = R.drawable.home), contentDescription = null, modifier = Modifier.size(26.dp)) },
-            label = { Text("Home", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
-            selected = currentRoute == "dashboard",
-            onClick = {
-                if (currentRoute != "dashboard") {
-                    navController.navigate("dashboard") {
-                        popUpTo("dashboard") { inclusive = true }
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(70.dp),
+            shape = RoundedCornerShape(35.dp),
+            // Glass effect: Semi-transparent white with a very subtle tint
+            color = Color.White.copy(alpha = 0.85f),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f)),
+            tonalElevation = 0.dp,
+            shadowElevation = 12.dp
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Home
+                CustomNavItem(
+                    label = "Home",
+                    iconRes = R.drawable.home,
+                    isSelected = currentRoute == "dashboard",
+                    onClick = {
+                        if (currentRoute != "dashboard") {
+                            navController.navigate("dashboard") {
+                                popUpTo("dashboard") { inclusive = true }
+                            }
+                        }
                     }
-                }
-            },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = CityMaroon,
-                selectedTextColor = CityMaroon,
-                unselectedIconColor = CityTextGray,
-                unselectedTextColor = CityTextGray,
-                indicatorColor = Color.Transparent
-            )
-        )
+                )
 
-        // History
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.Schedule, contentDescription = null, modifier = Modifier.size(26.dp)) },
-            label = { Text("History", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
-            selected = false,
-            onClick = { /* TODO */ },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = CityTextGray,
-                unselectedTextColor = CityTextGray,
-                indicatorColor = Color.Transparent
-            )
-        )
+                // History
+                CustomNavItem(
+                    label = "History",
+                    iconVector = Icons.Outlined.Schedule,
+                    isSelected = currentRoute == "history",
+                    onClick = {
+                        if (currentRoute != "history") {
+                            navController.navigate("history") {
+                                popUpTo("dashboard") { inclusive = false }
+                            }
+                        }
+                    }
+                )
 
-        // Pay Day Loan (Center Item)
-        NavigationBarItem(
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .background(CityMaroon, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Filled.Payments,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(28.dp)
+                // Support
+                CustomNavItem(
+                    label = "Support",
+                    iconVector = Icons.Outlined.HeadsetMic,
+                    isSelected = currentRoute == "support",
+                    onClick = {
+                        if (currentRoute != "support") {
+                            navController.navigate("support") {
+                                popUpTo("dashboard") { inclusive = false }
+                            }
+                        }
+                    }
+                )
+
+                // Settings
+                CustomNavItem(
+                    label = "Settings",
+                    iconVector = Icons.Outlined.Settings,
+                    isSelected = currentRoute == "settings",
+                    onClick = {
+                        if (currentRoute != "settings") {
+                            navController.navigate("settings") {
+                                popUpTo("dashboard") { inclusive = false }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomNavItem(
+    label: String,
+    iconVector: ImageVector? = null,
+    iconRes: Int? = null,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    // Animate colors for the premium pill effect
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected) CityMaroon else Color.Transparent,
+        animationSpec = tween(durationMillis = 400), label = "bg"
+    )
+    val contentColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else CityTextGray,
+        animationSpec = tween(durationMillis = 400), label = "content"
+    )
+
+    Box(
+        modifier = Modifier
+            .height(48.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = if (isSelected) 18.dp else 12.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.animateContentSize(animationSpec = tween(durationMillis = 50)),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (iconVector != null) {
+                Icon(
+                    imageVector = iconVector,
+                    contentDescription = label,
+                    tint = contentColor,
+                    modifier = Modifier.size(22.dp)
+                )
+            } else if (iconRes != null) {
+                Icon(
+                    painter = painterResource(id = iconRes),
+                    contentDescription = label,
+                    tint = contentColor,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            AnimatedVisibility(visible = isSelected) {
+                Row {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = label,
+                        color = contentColor,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
                     )
                 }
-            },
-            label = {
-                Text(
-                    "Apply",
-                    color = CityMaroon,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            },
-            selected = currentRoute == "apply_advance" || currentRoute?.startsWith("loan") == true,
-            onClick = {
-                if (currentRoute != "apply_advance") {
-                    navController.navigate("apply_advance")
-                }
-            },
-            alwaysShowLabel = true,
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.Transparent,
-                indicatorColor = Color.Transparent
-            )
-        )
-
-        // Support
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.HeadsetMic, contentDescription = null, modifier = Modifier.size(26.dp)) },
-            label = { Text("Support", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
-            selected = false,
-            onClick = { /* TODO */ },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = CityTextGray,
-                unselectedTextColor = CityTextGray,
-                indicatorColor = Color.Transparent
-            )
-        )
-
-        // Settings
-        NavigationBarItem(
-            icon = { Icon(Icons.Outlined.Settings, contentDescription = null, modifier = Modifier.size(26.dp)) },
-            label = { Text("Settings", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
-            selected = false,
-            onClick = { /* TODO */ },
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = CityTextGray,
-                unselectedTextColor = CityTextGray,
-                indicatorColor = Color.Transparent
-            )
-        )
+            }
+        }
     }
 }

@@ -53,6 +53,7 @@ fun ApplyAdvanceScreen(
     }
 
     Scaffold(
+        containerColor = CityBackground,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -71,12 +72,9 @@ fun ApplyAdvanceScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        },
-        bottomBar = {
-            AppNavigationBar(navController)
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(CityBackground)) {
+        Box(modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
             when (val state = dashboardState) {
                 is DashboardUiState.Loading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = CityMaroon)
@@ -281,7 +279,8 @@ fun ApplyAdvanceScreen(
                             Text("Continue", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
                         
-                        Spacer(modifier = Modifier.height(20.dp))
+                        // Extra space at bottom so content isn't hidden by the floating nav bar
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
             }
