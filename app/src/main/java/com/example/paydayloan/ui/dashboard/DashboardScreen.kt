@@ -310,7 +310,7 @@ fun EligibilityCard(amount: Double) {
                 LinearProgressIndicator(
                     progress = { 0.8f },
                     modifier = Modifier.fillMaxWidth().height(8.dp).background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp)),
-                    color = CityGold, // Use gold for the progress bar
+                    color = Color.White, // Use gold for the progress bar
                     trackColor = Color.Transparent,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
