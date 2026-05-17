@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.HeadsetMic
 import androidx.compose.material.icons.outlined.Settings
@@ -20,12 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.CityMaroon
 import com.example.paydayloan.ui.theme.CityTextGray
 import com.example.paydayloan.ui.theme.CityTextDark
@@ -42,7 +43,7 @@ fun AppNavigationBar(navController: NavController) {
     ) {
         // Home
         NavigationBarItem(
-            icon = { Icon(Icons.Outlined.Home, contentDescription = null, modifier = Modifier.size(26.dp)) },
+            icon = { Icon(painterResource(id = R.drawable.home), contentDescription = null, modifier = Modifier.size(26.dp)) },
             label = { Text("Home", fontSize = 11.sp, fontWeight = FontWeight.Medium) },
             selected = currentRoute == "dashboard",
             onClick = {
