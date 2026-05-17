@@ -143,7 +143,7 @@ fun DashboardScreen(
                                         color = CityTextDark
                                     )
                                 )
-                                TextButton(onClick = { /* TODO */ }) {
+                                TextButton(onClick = { navController.navigate("history") }) {
                                     Text("View All", color = CityMaroon, fontWeight = FontWeight.Bold)
                                 }
                             }
