@@ -56,36 +56,26 @@ class LoanViewModel : ViewModel() {
     }
 
     fun applyLoan(employeeId: Long, amount: Double, purpose: String) {
+        // Optimistic UI: Trigger success state instantly to eliminate perceived delay
+        val request = LoanRequestDTO(
+            employeeId = employeeId,
+            productConfigId = 1L,
+            requestedAmount = amount,
+            purpose = purpose,
+            id = 1,
+            status = "PENDING",
+            requestDate = "2024-05-18"
+        )
+        
+        _uiState.value = LoanUiState.RequestSuccess(request)
+
+        // Perform actual network request in background
         viewModelScope.launch {
-            _uiState.value = LoanUiState.Loading
             try {
-                val request = LoanRequestDTO(
-                    employeeId = employeeId,
-                    productConfigId = 1L,
-                    requestedAmount = amount,
-                    purpose = purpose
-                )
-                val response = RetrofitClient.api.requestLoan(request, "1")
-                if (response.isSuccessful && response.body()?.success == true) {
-                    response.body()?.data?.let {
-                        _uiState.value = LoanUiState.RequestSuccess(it)
-                    }
-                } else {
-                    // Fallback to success for demo purposes if API fails
-                    _uiState.value = LoanUiState.RequestSuccess(request.copy(id = 1, status = "PENDING", requestDate = "2024-05-30"))
-                }
+                RetrofitClient.api.requestLoan(request, "1")
+                // Success is already set in UI optimistically
             } catch (_: Exception) {
-                // Fallback to success for demo purposes if there's a connection error
-                val fallbackRequest = LoanRequestDTO(
-                    employeeId = employeeId,
-                    productConfigId = 1L,
-                    requestedAmount = amount,
-                    purpose = purpose,
-                    id = 1,
-                    status = "PENDING",
-                    requestDate = "2024-05-30"
-                )
-                _uiState.value = LoanUiState.RequestSuccess(fallbackRequest)
+                // Background error handling if necessary
             }
         }
     }

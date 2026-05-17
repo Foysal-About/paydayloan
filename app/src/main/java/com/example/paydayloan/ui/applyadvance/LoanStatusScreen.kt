@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -26,6 +26,44 @@ import com.example.paydayloan.ui.components.AppNavigationBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoanStatusScreen(navController: NavController) {
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = {
+                Text(
+                    "Cancel Request",
+                    fontWeight = FontWeight.Bold,
+                    color = CityTextDark
+                )
+            },
+            text = {
+                Text(
+                    "Are you sure you want to cancel this loan request?",
+                    color = CityTextGray
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showCancelDialog = false
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text("Yes, Cancel", color = CityMaroon, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelDialog = false }) {
+                    Text("No", color = CityTextGray)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(24.dp)
+        )
+    }
+
     Scaffold(
         containerColor = CityBackground,
         topBar = {
@@ -202,7 +240,7 @@ fun LoanStatusScreen(navController: NavController) {
                 }
 
                 Button(
-                    onClick = { /* Handle cancel */ },
+                    onClick = { showCancelDialog = true },
                     modifier = Modifier.fillMaxWidth().height(54.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(

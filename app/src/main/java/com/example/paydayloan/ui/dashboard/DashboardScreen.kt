@@ -251,7 +251,11 @@ fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
                 )
                 Text(
                     loan.status ?: "PENDING",
-                    color = if (loan.status == "REPAID" || loan.status == "DISBURSED") CitySuccess else CityWarning,
+                    color = when (loan.status) {
+                        "REPAID", "DISBURSED" -> CitySuccess
+                        "FAILED", "REJECTED" -> CityError
+                        else -> CityWarning
+                    },
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
