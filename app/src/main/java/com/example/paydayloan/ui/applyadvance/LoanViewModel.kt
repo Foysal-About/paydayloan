@@ -3,6 +3,7 @@ package com.example.paydayloan.ui.applyadvance
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.paydayloan.api.RetrofitClient
+import com.example.paydayloan.api.MockDataRepository
 import com.example.paydayloan.api.model.LoanRequestDTO
 import com.example.paydayloan.api.model.LoanSimulationDTO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,15 +57,18 @@ class LoanViewModel : ViewModel() {
     }
 
     fun applyLoan(employeeId: Long, amount: Double, purpose: String) {
-        // Optimistic UI: Trigger success state instantly to eliminate perceived delay
+        // Update mock repository to reflect on dashboard
+        MockDataRepository.applyLoan(amount, purpose)
+        
+        // Optimistic UI: Trigger success state instantly
         val request = LoanRequestDTO(
             employeeId = employeeId,
             productConfigId = 1L,
             requestedAmount = amount,
             purpose = purpose,
-            id = 1,
+            id = (MockDataRepository.loanHistory.size).toLong(),
             status = "PENDING",
-            requestDate = "2024-05-18"
+            requestDate = "18 May 2024"
         )
         
         _uiState.value = LoanUiState.RequestSuccess(request)

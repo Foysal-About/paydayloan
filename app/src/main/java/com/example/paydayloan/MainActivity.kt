@@ -34,6 +34,7 @@ import com.example.paydayloan.ui.applyadvance.LoanStatusScreen
 import com.example.paydayloan.ui.applyadvance.LoanSummaryScreen
 import com.example.paydayloan.ui.auth.LoginScreen
 import com.example.paydayloan.ui.history.HistoryScreen
+import com.example.paydayloan.ui.notification.NotificationScreen
 import com.example.paydayloan.ui.support.SupportScreen
 import com.example.paydayloan.ui.settings.SettingsScreen
 import com.example.paydayloan.ui.components.AppNavigationBar
@@ -104,7 +105,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                                 Text(
-                                    "Senior Software Engineer",
+                                    "Software Engineer",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = CityTextGray
                                 )
@@ -196,6 +197,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("settings") {
                                 SettingsScreen(navController)
+                            }
+                            composable("notifications") {
+                                NotificationScreen(navController)
                             }
                         }
 

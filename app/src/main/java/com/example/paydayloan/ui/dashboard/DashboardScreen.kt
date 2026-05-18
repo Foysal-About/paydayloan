@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,8 +63,13 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO */ }) {
-                        Icon(Icons.Default.NotificationsNone, contentDescription = "Notifications", tint = CityTextGray)
+                    IconButton(onClick = { navController.navigate("notifications") }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.notification),
+                            contentDescription = "Notifications",
+                            tint = CityTextGray,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
