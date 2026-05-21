@@ -1,6 +1,7 @@
 package com.example.paydayloan.ui.auth
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,22 +16,59 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.*
 
 @Composable
 fun LoginScreen(navController: NavController) {
+    val context = LocalContext.current
     var employeeId by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+
+    val executor = remember { ContextCompat.getMainExecutor(context) }
+    val biometricPrompt = remember {
+        BiometricPrompt(
+            context as FragmentActivity,
+            executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    // Handle error
+                }
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    navController.navigate("dashboard") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+            }
+        )
+    }
+
+    val promptInfo = remember {
+        BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric Login")
+            .setSubtitle("Log in using your biometric credential")
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .build()
+    }
 
     Scaffold(
         containerColor = CityBackground
@@ -44,25 +82,24 @@ fun LoginScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Premium Header Section with City Bank Branding
+            // Standard Header Section with City Bank Logo
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = "Welcome to",
                         color = CityTextGray,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
                     Text(
                         text = "City PayDay",
                         color = CityMaroon,
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        letterSpacing = (-1).sp
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
@@ -73,60 +110,30 @@ fun LoginScreen(navController: NavController) {
                     )
                 }
 
-                // Premium Illustration Placeholder
+                // Official City Bank Logo from city_logo.png
                 Box(
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(start = 8.dp),
+                        .padding(top = 4.dp, start = 12.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Box(
+                    Image(
+                        painter = painterResource(id = R.drawable.city_logo),
+                        contentDescription = "City Bank Logo",
                         modifier = Modifier
-                            .size(70.dp)
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(CityMaroon, CityMaroonDark)
-                                ),
-                                shape = RoundedCornerShape(20.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AccountBalanceWallet,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(36.dp)
-                        )
-                    }
-                    Surface(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .size(32.dp),
-                        shape = CircleShape,
-                        color = Color.White,
-                        shadowElevation = 4.dp
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = Icons.Default.Schedule,
-                                contentDescription = null,
-                                tint = CityGold,
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
+                            .size(80.dp),
+                        contentScale = ContentScale.Fit
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // Login Card with improved Material 3 styling
-            Card(
+            // Standard Login Card
+            Surface(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.1f))
+                shape = RoundedCornerShape(32.dp),
+                color = Color.White,
+                shadowElevation = 2.dp
             ) {
                 Column(
                     modifier = Modifier.padding(28.dp)
@@ -153,24 +160,30 @@ fun LoginScreen(navController: NavController) {
                         color = CityTextDark,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    OutlinedTextField(
+                    TextField(
                         value = employeeId,
                         onValueChange = { employeeId = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text("ID: 1002345", color = Color.LightGray) },
                         shape = RoundedCornerShape(16.dp),
                         leadingIcon = {
-                            Icon(Icons.Default.Person, contentDescription = null, tint = CityMaroon.copy(alpha = 0.6f))
+                            Icon(
+                                Icons.Default.Person, 
+                                contentDescription = null, 
+                                tint = CityMaroon.copy(alpha = 0.5f),
+                                modifier = Modifier.size(24.dp)
+                            )
                         },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = CityBackground,
-                            focusedBorderColor = CityMaroon,
-                            unfocusedContainerColor = CityBackground,
-                            focusedContainerColor = CityBackground
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF5F6F8),
+                            unfocusedContainerColor = Color(0xFFF5F6F8),
+                            disabledContainerColor = Color(0xFFF5F6F8),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Password Field
                     Text(
@@ -180,14 +193,19 @@ fun LoginScreen(navController: NavController) {
                         color = CityTextDark,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
-                    OutlinedTextField(
+                    TextField(
                         value = password,
                         onValueChange = { password = it },
                         modifier = Modifier.fillMaxWidth(),
                         placeholder = { Text("••••••••", color = Color.LightGray) },
                         shape = RoundedCornerShape(16.dp),
                         leadingIcon = {
-                            Icon(Icons.Default.Lock, contentDescription = null, tint = CityMaroon.copy(alpha = 0.6f))
+                            Icon(
+                                Icons.Default.Lock, 
+                                contentDescription = null, 
+                                tint = CityMaroon.copy(alpha = 0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
                         },
                         trailingIcon = {
                             IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
@@ -199,29 +217,30 @@ fun LoginScreen(navController: NavController) {
                             }
                         },
                         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedBorderColor = CityBackground,
-                            focusedBorderColor = CityMaroon,
-                            unfocusedContainerColor = CityBackground,
-                            focusedContainerColor = CityBackground
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color(0xFFF5F6F8),
+                            unfocusedContainerColor = Color(0xFFF5F6F8),
+                            disabledContainerColor = Color(0xFFF5F6F8),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
                         )
                     )
 
-                    Text(
-                        text = "Forgot Password?",
-                        color = CityMaroon,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp)
-                            .clickable { /* Handle forgot password */ }
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        Text(
+                            text = "Forgot Password?",
+                            color = CityMaroon,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.clickable { /* Handle forgot password */ }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Premium Actions
+                    // Actions Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -231,26 +250,39 @@ fun LoginScreen(navController: NavController) {
                             onClick = { navController.navigate("dashboard") },
                             modifier = Modifier
                                 .weight(1f)
-                                .height(60.dp),
+                                .height(64.dp)
+                                .shadow(8.dp, RoundedCornerShape(16.dp), spotColor = CityMaroon),
                             shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
-                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            colors = ButtonDefaults.buttonColors(containerColor = CityMaroon)
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Outlined.Shield, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(modifier = Modifier.width(12.dp))
-                                Text("Sign In", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                Text("Sign In", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                             }
                         }
 
-                        OutlinedButton(
-                            onClick = { /* Biometric */ },
-                            modifier = Modifier.size(60.dp),
+                        Surface(
+                            onClick = { 
+                                try {
+                                    biometricPrompt.authenticate(promptInfo)
+                                } catch (e: Exception) {
+                                    // Fallback or error handling
+                                }
+                            },
+                            modifier = Modifier.size(64.dp),
                             shape = RoundedCornerShape(16.dp),
-                            contentPadding = PaddingValues(0.dp),
-                            border = BorderStroke(1.dp, CityMaroon.copy(alpha = 0.2f))
+                            border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.4f)),
+                            color = Color.White
                         ) {
-                            Icon(Icons.Default.Fingerprint, contentDescription = null, tint = CityMaroon, modifier = Modifier.size(32.dp))
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    Icons.Default.Fingerprint, 
+                                    contentDescription = null, 
+                                    tint = CityMaroon, 
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
                         }
                     }
                 }
@@ -261,9 +293,8 @@ fun LoginScreen(navController: NavController) {
             // Bank Security Badge
             Surface(
                 modifier = Modifier.fillMaxWidth(),
-                color = CitySuccess.copy(alpha = 0.05f),
-                shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, CitySuccess.copy(alpha = 0.1f))
+                color = Color(0xFFEDF2F1),
+                shape = RoundedCornerShape(24.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(20.dp),
@@ -275,14 +306,19 @@ fun LoginScreen(navController: NavController) {
                             .background(CitySuccess, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Outlined.Shield, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+                        Icon(
+                            Icons.Outlined.Shield, 
+                            contentDescription = null, 
+                            tint = Color.White, 
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Column {
                         Text(
                             "Secured by City Bank PLC",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
+                            fontSize = 15.sp,
                             color = CityTextDark
                         )
                         Text(
