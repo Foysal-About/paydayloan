@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.paydayloan.ui.theme.*
-import com.example.paydayloan.ui.components.AppNavigationBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -252,8 +251,8 @@ fun LoanStatusScreen(navController: NavController) {
                     Text("Cancel Request", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
                 
-                // Extra space at bottom so content isn't hidden by the floating nav bar
-                Spacer(modifier = Modifier.height(100.dp))
+                // Extra space at bottom
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }

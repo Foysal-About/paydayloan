@@ -1,6 +1,7 @@
 package com.example.paydayloan.ui.dashboard
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,11 +58,6 @@ fun DashboardScreen(
                         )
                     )
                 },
-                navigationIcon = {
-                    IconButton(onClick = onOpenDrawer) {
-                        Icon(Icons.Default.Menu, contentDescription = "Menu", tint = CityMaroon)
-                    }
-                },
                 actions = {
                     IconButton(onClick = { navController.navigate("notifications") }) {
                         Icon(
@@ -72,7 +68,7 @@ fun DashboardScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
@@ -130,6 +126,20 @@ fun DashboardScreen(
                             }
                         }
 
+                        item {
+                            Button(
+                                onClick = { navController.navigate("apply_advance") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(56.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
+                            ) {
+                                Text("Apply for Advance", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
                         // Active Loan Card
                         item {
                             ActiveLoanCardFromDTO(data.activeLoan)
@@ -157,20 +167,6 @@ fun DashboardScreen(
 
                         items(data.loanHistory.take(2)) { loan ->
                             RecentLoanItemFromDTO(loan)
-                        }
-
-                        item {
-                            Button(
-                                onClick = { navController.navigate("apply_advance") },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(56.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
-                                shape = RoundedCornerShape(16.dp),
-                                elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-                            ) {
-                                Text("Apply for Advance", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                            }
                         }
 
                         // Extra space at bottom so content isn't hidden by the floating nav bar
@@ -272,8 +268,12 @@ fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
 
 @Composable
 fun EligibilityCard(amount: Double) {
+    var isRevealed by remember { mutableStateOf(false) }
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { isRevealed = !isRevealed },
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -297,34 +297,31 @@ fun EligibilityCard(amount: Double) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "৳ ${String.format(Locale.US, "%,.0f", amount)}",
-                        color = Color.White,
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.ExtraBold
-                    )
+                    if (isRevealed) {
+                        Text(
+                            "৳ ${String.format(Locale.US, "%,.0f", amount)}",
+                            color = Color.White,
+                            fontSize = 32.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                    } else {
+                        Text(
+                            "Tap to reveal",
+                            color = Color.White.copy(alpha = 0.7f),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                    
                     Icon(
-                        imageVector = Icons.Default.AccountBalanceWallet,
+                        imageVector = if (isRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                         contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = Color.White.copy(alpha = 0.2f)
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.White.copy(alpha = 0.5f)
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                LinearProgressIndicator(
-                    progress = { 0.8f },
-                    modifier = Modifier.fillMaxWidth().height(8.dp).background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp)),
-                    color = Color.White, // Use gold for the progress bar
-                    trackColor = Color.Transparent,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    "80% of your total salary is available",
-                    color = Color.White.copy(alpha = 0.8f),
-                    fontSize = 12.sp
-                )
             }
         }
     }

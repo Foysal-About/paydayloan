@@ -58,9 +58,7 @@ class MainActivity : FragmentActivity() {
                     "dashboard", 
                     "history", 
                     "support", 
-                    "settings", 
-                    "apply_advance", 
-                    "loan_status"
+                    "settings"
                 )
 
                 ModalNavigationDrawer(

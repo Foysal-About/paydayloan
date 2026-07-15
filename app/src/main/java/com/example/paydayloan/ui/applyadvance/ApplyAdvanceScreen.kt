@@ -23,7 +23,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.paydayloan.ui.components.AppNavigationBar
 import java.util.Locale
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -109,7 +108,7 @@ fun ApplyAdvanceScreen(
                                 Text("Your Eligibility", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
                                 Spacer(modifier = Modifier.height(16.dp))
                                 EligibilityRow("Monthly Salary", data.monthlySalary)
-                                EligibilityRow("Maximum Limit (80%)", maxEligible)
+                                EligibilityRow("Maximum Limit (40%)", maxEligible)
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityBackground)
                                 EligibilityRow("Available to Withdraw", availableLimit, isHighlight = true)
                             }
@@ -279,8 +278,8 @@ fun ApplyAdvanceScreen(
                             Text("Continue", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                         }
                         
-                        // Extra space at bottom so content isn't hidden by the floating nav bar
-                        Spacer(modifier = Modifier.height(100.dp))
+                        // Extra space at bottom
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
                 }
             }

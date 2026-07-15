@@ -43,8 +43,8 @@ class DashboardViewModel : ViewModel() {
     private fun createFallbackDashboard(): EmployeeDashboardDTO {
         return EmployeeDashboardDTO(
             monthlySalary = 50000.0,
-            eligibleAmount = 40000.0,
-            availableLimit = 25000.0,
+            eligibleAmount = 20000.0,
+            availableLimit = 20000.0,
             activeLoan = MockDataRepository.activeLoan,
             loanHistory = MockDataRepository.loanHistory.toList()
         )
