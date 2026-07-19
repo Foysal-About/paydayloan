@@ -59,9 +59,9 @@ fun DashboardScreen(
                         modifier = Modifier
                             .padding(start = 16.dp)
                             .size(40.dp)
-                            .background(Color.Transparent.copy(alpha = 0.2f), CircleShape)
-                            .clickable { onOpenDrawer() },
-                        contentAlignment = Alignment.Center
+                            .background(Color.Transparent.copy(alpha = 0.2f), CircleShape),
+//                            .clickable { onOpenDrawer() },
+                            contentAlignment = Alignment.Center
                     ) {
                         Text(
                             "S",
@@ -72,15 +72,21 @@ fun DashboardScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* Search */ }) {
-                        Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.White)
-                    }
-                    IconButton(onClick = { /* Rewards */ }) {
-                        Icon(Icons.Default.EmojiEvents, contentDescription = "Rewards", tint = Color.White)
+                    IconButton(onClick = { navController.navigate("search") }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.search),
+                            contentDescription = "Search",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                     IconButton(onClick = { navController.navigate("notifications") }) {
-                        Icon(Icons.Default.Notifications, contentDescription = "Notifications", tint = Color.White)
-                    }
+                        Icon(
+                            painter = painterResource(id = R.drawable.notification),
+                            contentDescription = "Notification",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = CityMaroon,
@@ -161,7 +167,7 @@ private fun RedHeaderSection(cardOverlapPx: Int) {
                 Text(
                     "SYED FOYSAL",
                     style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Normal,
                         color = Color.White
                     )
                 )
@@ -361,31 +367,23 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(150.dp),
+            .height(120.dp),
         shape = cardShape,
-        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.2f)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
-    ) {
+        colors = CardDefaults.cardColors(
+            containerColor = CityBackground.copy(alpha = 0.95f) // adjust alpha as needed
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.8f),
-                            Color.White.copy(alpha = 0.4f)
-                        )
-                    )
-                )
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = if (isRevealed) "৳ ${String.format(Locale.US, "%,.2f", amount)}" else "৳XXXX.XX",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Medium,
                             color = CityTextDark
                         )
                     )
@@ -404,7 +402,7 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
-                        painter = painterResource(id = R.drawable.pl),
+                        painter = painterResource(id = R.drawable.city_logo),
                         contentDescription = null,
                         modifier = Modifier.size(36.dp)
                     )
@@ -435,8 +433,7 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier

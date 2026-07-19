@@ -123,33 +123,6 @@ fun SupportScreen(navController: NavController) {
                 SupportTopicItem(Icons.Outlined.AccountBalance, "Repayment Methods", "Automatic & manual repayments")
                 SupportTopicItem(Icons.Outlined.Security, "Security & Login", "Password and biometric issues")
             }
-
-            // 4. Emergency Section
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                color = CityMaroon.copy(alpha = 0.05f),
-                border = androidx.compose.foundation.BorderStroke(1.dp, CityMaroon.copy(alpha = 0.1f))
-            ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .background(CityMaroon, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Outlined.ErrorOutline, contentDescription = null, tint = Color.White)
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("Report Fraud", fontWeight = FontWeight.Bold, color = CityMaroon)
-                        Text("Block account immediately", fontSize = 12.sp, color = CityTextGray)
-                    }
-                    Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null, tint = CityMaroon)
-                }
             }
 
             // 5. App Status
@@ -172,7 +145,7 @@ fun SupportScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(100.dp))
         }
     }
-}
+
 
 @Composable
 fun ContactCard(icon: ImageVector, title: String, subtitle: String, modifier: Modifier = Modifier) {

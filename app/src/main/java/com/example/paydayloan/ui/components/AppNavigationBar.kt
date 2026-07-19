@@ -6,10 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.HeadsetMic
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.CityMaroon
 import com.example.paydayloan.ui.theme.CityTextGray
 
@@ -48,7 +46,7 @@ fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier
             // Home
             CustomNavItem(
                 label = "Home",
-                iconVector = Icons.Default.Home,
+                iconRes = R.drawable.home,
                 isSelected = currentRoute == "dashboard",
                 onClick = {
                     if (currentRoute != "dashboard") {
@@ -62,7 +60,7 @@ fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier
             // History
             CustomNavItem(
                 label = "History",
-                iconVector = Icons.Default.History,
+                iconRes = R.drawable.history,
                 isSelected = currentRoute == "history",
                 onClick = {
                     if (currentRoute != "history") {
@@ -90,7 +88,7 @@ fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier
             // Settings
             CustomNavItem(
                 label = "Settings",
-                iconVector = Icons.Default.Settings,
+                iconRes = R.drawable.setting,
                 isSelected = currentRoute == "settings",
                 onClick = {
                     if (currentRoute != "settings") {
