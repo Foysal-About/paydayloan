@@ -34,13 +34,13 @@ fun LoanStatusScreen(navController: NavController) {
                 Text(
                     "Cancel Request",
                     fontWeight = FontWeight.Bold,
-                    color = CityTextDark
+                    color = appColors.textPrimary
                 )
             },
             text = {
                 Text(
                     "Are you sure you want to cancel this loan request?",
-                    color = CityTextGray
+                    color = appColors.textSecondary
                 )
             },
             confirmButton = {
@@ -55,16 +55,16 @@ fun LoanStatusScreen(navController: NavController) {
             },
             dismissButton = {
                 TextButton(onClick = { showCancelDialog = false }) {
-                    Text("No", color = CityTextGray)
+                    Text("No", color = appColors.textSecondary)
                 }
             },
-            containerColor = Color.White,
+            containerColor = appColors.surface,
             shape = RoundedCornerShape(24.dp)
         )
     }
 
     Scaffold(
-        containerColor = CityBackground,
+        containerColor = appColors.background,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -72,16 +72,16 @@ fun LoanStatusScreen(navController: NavController) {
                         "Loan Status",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = appColors.textPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
@@ -96,15 +96,15 @@ fun LoanStatusScreen(navController: NavController) {
                 // Premium Header Status Card with City Bank Maroon branding
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = appColors.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .background(
                                 brush = Brush.horizontalGradient(
-                                    colors = listOf(CityMaroon.copy(alpha = 0.08f), Color.White)
+                                    colors = listOf(CityMaroon.copy(alpha = 0.08f), appColors.surface)
                                 )
                             )
                             .padding(20.dp)
@@ -124,14 +124,14 @@ fun LoanStatusScreen(navController: NavController) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     "Your request is waiting for approval from your employer.",
-                                    color = CityTextDark,
+                                    color = appColors.textPrimary,
                                     fontSize = 13.sp,
                                     lineHeight = 18.sp
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     "Requested on 18 May 2024, 10:30 AM",
-                                    color = CityTextGray,
+                                    color = appColors.textSecondary,
                                     fontSize = 12.sp
                                 )
                             }
@@ -156,17 +156,17 @@ fun LoanStatusScreen(navController: NavController) {
                 // Request Details Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = appColors.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
-                        Text("Request Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
+                        Text("Request Details", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = appColors.textPrimary)
                         Spacer(modifier = Modifier.height(16.dp))
                         
                         StatusRow("Requested Amount", "৳ 20,000.00")
                         StatusRow("Service Charge", "৳ 400.00")
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = CityBackground)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = appColors.divider)
                         StatusRow("You Will Receive", "৳ 19,600.00", isHighlight = true)
                         
                         Spacer(modifier = Modifier.height(16.dp))
@@ -178,7 +178,7 @@ fun LoanStatusScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("Status", color = CityTextGray, fontSize = 14.sp)
+                            Text("Status", color = appColors.textSecondary, fontSize = 14.sp)
                             Surface(
                                 color = CityWarning.copy(alpha = 0.15f),
                                 shape = RoundedCornerShape(8.dp)
@@ -198,12 +198,12 @@ fun LoanStatusScreen(navController: NavController) {
                 // Status Timeline Card
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = appColors.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
-                        Text("Status Timeline", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
+                        Text("Status Timeline", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = appColors.textPrimary)
                         Spacer(modifier = Modifier.height(20.dp))
                         
                         TimelineItem(
@@ -240,10 +240,10 @@ fun LoanStatusScreen(navController: NavController) {
 
                 Button(
                     onClick = { showCancelDialog = true },
-                    modifier = Modifier.fillMaxWidth().height(54.dp),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
+                        containerColor = appColors.surface,
                         contentColor = CityMaroon
                     ),
                     border = BorderStroke(1.dp, CityMaroon.copy(alpha = 0.3f))
@@ -252,7 +252,7 @@ fun LoanStatusScreen(navController: NavController) {
                 }
                 
                 // Extra space at bottom
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.navigationBarsPadding().height(32.dp))
             }
         }
     }
@@ -266,13 +266,13 @@ fun StatusRow(label: String, value: String, isHighlight: Boolean = false) {
     ) {
         Text(
             label, 
-            color = if (isHighlight) CityMaroon else CityTextGray, 
+            color = if (isHighlight) CityMaroon else appColors.textSecondary, 
             fontSize = 14.sp, 
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             value,
-            color = if (isHighlight) CityMaroon else CityTextDark,
+            color = if (isHighlight) CityMaroon else appColors.textPrimary,
             fontSize = 14.sp,
             fontWeight = if (isHighlight) FontWeight.Bold else FontWeight.Medium
         )
@@ -298,15 +298,15 @@ fun TimelineItem(
                     imageVector = Icons.Default.Schedule,
                     contentDescription = null,
                     tint = CityMaroon,
-                    modifier = Modifier.size(24.dp).background(Color.White, CircleShape)
+                    modifier = Modifier.size(24.dp).background(appColors.surface, CircleShape)
                 )
             } else {
                 Box(
                     modifier = Modifier
                         .size(16.dp)
                         .padding(top = 4.dp)
-                        .background(Color.White, CircleShape)
-                        .background(if (isActive) CityMaroon else Color(0xFFE0E0E0), CircleShape)
+                        .background(appColors.surface, CircleShape)
+                        .background(if (isActive) CityMaroon else appColors.divider, CircleShape)
                 )
             }
             
@@ -315,7 +315,7 @@ fun TimelineItem(
                     modifier = Modifier
                         .width(2.dp)
                         .height(40.dp)
-                        .background(Color(0xFFE0E0E0))
+                        .background(appColors.divider)
                 )
             }
         }
@@ -327,12 +327,12 @@ fun TimelineItem(
                 title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = if (isActive) CityMaroon else CityTextDark
+                color = if (isActive) CityMaroon else appColors.textPrimary
             )
             Text(
                 subtitle,
                 fontSize = 12.sp,
-                color = CityTextGray
+                color = appColors.textSecondary
             )
         }
     }

@@ -17,8 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.paydayloan.R
-import com.example.paydayloan.ui.theme.CityTextDark
-import com.example.paydayloan.ui.theme.CityTextGray
+import com.example.paydayloan.ui.theme.appColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -34,7 +33,7 @@ fun SearchScreen(navController: NavController) {
                         "Search Services",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = CityTextDark
+                        color = appColors.textPrimary
                     )
                 },
                 navigationIcon = {
@@ -42,17 +41,17 @@ fun SearchScreen(navController: NavController) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                             contentDescription = "Back",
-                            tint = CityTextDark,
+                            tint = appColors.textPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White
+                    containerColor = Color.Transparent
                 )
             )
         },
-        containerColor = Color(0xFFFBFBFB) // Slightly whiter background like in image
+        containerColor = appColors.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -69,13 +68,13 @@ fun SearchScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(elevation = 2.dp, shape = RoundedCornerShape(12.dp))
-                    .background(Color.White, RoundedCornerShape(12.dp)),
-                placeholder = { Text("Search", color = CityTextGray.copy(alpha = 0.7f)) },
+                    .background(appColors.surface, RoundedCornerShape(12.dp)),
+                placeholder = { Text("Search", color = appColors.textSecondary.copy(alpha = 0.7f)) },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(id = R.drawable.search),
                         contentDescription = null,
-                        tint = CityTextGray.copy(alpha = 0.5f),
+                        tint = appColors.textSecondary.copy(alpha = 0.5f),
                         modifier = Modifier.size(20.dp)
                     )
                 },
@@ -83,8 +82,8 @@ fun SearchScreen(navController: NavController) {
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedContainerColor = appColors.surface,
+                    unfocusedContainerColor = appColors.surface
                 ),
                 singleLine = true
             )
@@ -95,7 +94,7 @@ fun SearchScreen(navController: NavController) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = appColors.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(
@@ -104,7 +103,7 @@ fun SearchScreen(navController: NavController) {
                     Text(
                         "Suggestion",
                         fontSize = 14.sp,
-                        color = CityTextGray,
+                        color = appColors.textSecondary,
                         fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -132,13 +131,13 @@ fun SuggestionChip(label: String, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.clickable { onClick() },
         shape = RoundedCornerShape(10.dp), // Less rounded like in image
-        color = Color(0xFFF8F8F8)
+        color = appColors.surfaceVariant
     ) {
         Text(
             text = label,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             fontSize = 14.sp,
-            color = CityTextDark
+            color = appColors.textPrimary
         )
     }
 }

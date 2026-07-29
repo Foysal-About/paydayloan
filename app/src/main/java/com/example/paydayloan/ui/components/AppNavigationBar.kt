@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.CityMaroon
-import com.example.paydayloan.ui.theme.CityTextGray
+import com.example.paydayloan.ui.theme.appColors
 
 @Composable
 fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier) {
@@ -32,14 +32,15 @@ fun AppNavigationBar(navController: NavController, modifier: Modifier = Modifier
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(75.dp),
-        color = Color.White,
+        modifier = modifier.fillMaxWidth(),
+        color = appColors.surface,
         shadowElevation = 20.dp
     ) {
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .height(75.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.Top // Align to top to position indicators correctly
         ) {
@@ -110,7 +111,7 @@ fun CustomNavItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val contentColor = if (isSelected) CityMaroon else CityTextGray
+    val contentColor = if (isSelected) CityMaroon else appColors.textSecondary
 
     Column(
         modifier = Modifier

@@ -1,6 +1,5 @@
 package com.example.paydayloan.ui.dashboard
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,12 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -35,6 +31,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.paydayloan.R
 import com.example.paydayloan.ui.theme.*
+
+// Fixed size so the floating account card's overlap is deterministic — no runtime
+// height measurement/feedback loop that could settle into a wrong first-frame layout.
+private val EligibilityCardHeight = 120.dp
+private val EligibilityCardOverlap = EligibilityCardHeight / 2
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,21 +117,22 @@ fun DashboardScreen(
             }
             is DashboardUiState.Success -> {
                 val data = state.data
-                var cardHeightPx by remember { mutableStateOf(0) }
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(top = padding.calculateTopPadding())
                 ) {
-                    item { RedHeaderSection(cardOverlapPx = cardHeightPx / 2) }
-
                     item {
-                        WhiteHomeContainer(
-                            data = data,
-                            navController = navController,
-                            cardHeightPx = cardHeightPx,
-                            onCardSizeChanged = { cardHeightPx = it }
-                        )
+                        // Header and container live in ONE item so the floating card
+                        // (which overflows above the container) is guaranteed to draw
+                        // on top — LazyColumn doesn't promise z-order across items.
+                        Column {
+                            RedHeaderSection()
+                            WhiteHomeContainer(
+                                data = data,
+                                navController = navController
+                            )
+                        }
                     }
                 }
             }
@@ -139,10 +141,7 @@ fun DashboardScreen(
 }
 
 @Composable
-private fun RedHeaderSection(cardOverlapPx: Int) {
-    val density = LocalDensity.current
-    val cardOverlapDp = with(density) { cardOverlapPx.toDp() }
-
+private fun RedHeaderSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -150,7 +149,7 @@ private fun RedHeaderSection(cardOverlapPx: Int) {
                 brush = Brush.verticalGradient(colors = listOf(CityMaroon, CityMaroonDark))
             )
             .padding(horizontal = 20.dp)
-            .padding(top = 16.dp, bottom = cardOverlapDp + 24.dp)
+            .padding(top = 16.dp, bottom = EligibilityCardOverlap + 24.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -179,22 +178,17 @@ private fun RedHeaderSection(cardOverlapPx: Int) {
 @Composable
 private fun WhiteHomeContainer(
     data: EmployeeDashboardDTO,
-    navController: NavController,
-    cardHeightPx: Int,
-    onCardSizeChanged: (Int) -> Unit
+    navController: NavController
 ) {
-    val density = LocalDensity.current
-    val cardOverlapDp = with(density) { (cardHeightPx / 2).toDp() }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+            .background(appColors.surface, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = cardOverlapDp + 24.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
+                .padding(top = EligibilityCardOverlap + 24.dp, start = 20.dp, end = 20.dp, bottom = 20.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Salary and Limit Info Cards
@@ -242,7 +236,7 @@ private fun WhiteHomeContainer(
                     "Recent History",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        color = CityTextDark
+                        color = appColors.textPrimary
                     )
                 )
                 TextButton(onClick = { navController.navigate("history") }) {
@@ -263,8 +257,7 @@ private fun WhiteHomeContainer(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 20.dp)
-                .offset { IntOffset(0, -(cardHeightPx / 2)) }
-                .onSizeChanged { onCardSizeChanged(it.height) }
+                .offset(y = -EligibilityCardOverlap)
         )
     }
 }
@@ -275,7 +268,7 @@ fun ActiveLoanCardFromDTO(activeLoan: ActiveLoanDTO?) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = appColors.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -283,76 +276,104 @@ fun ActiveLoanCardFromDTO(activeLoan: ActiveLoanDTO?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = CityTextDark)
+                Text("Active Loan Status", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = appColors.textPrimary)
                 Spacer(modifier = Modifier.height(8.dp))
                 if (activeLoan == null) {
                     Text("No ongoing loans", color = CityMaroon, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text("Apply today for an instant advance.", color = CityTextGray, fontSize = 12.sp)
+                    Text("Apply today for an instant advance.", color = appColors.textSecondary, fontSize = 12.sp)
                 } else {
                     Text("৳ ${activeLoan.sanctionedAmount}", color = CityMaroon, fontWeight = FontWeight.Bold)
-                    Text("Repayment: ${activeLoan.maturityDate}", color = CityTextGray, fontSize = 12.sp)
+                    Text("Repayment: ${activeLoan.maturityDate}", color = appColors.textSecondary, fontSize = 12.sp)
                 }
             }
             Icon(
                 imageVector = Icons.Default.ArrowForwardIos,
                 contentDescription = null,
-                tint = CityTextGray.copy(alpha = 0.5f),
+                tint = appColors.textSecondary.copy(alpha = 0.5f),
                 modifier = Modifier.size(16.dp)
             )
         }
     }
 }
 
+// Maps a loan status to its visual treatment: accent color + leading icon.
+// Keeps the item layout declarative and the color/icon logic in one place.
+private data class LoanStatusStyle(val color: Color, val icon: ImageVector)
+
+private fun statusStyle(status: String?): LoanStatusStyle = when (status) {
+    "REPAID", "DISBURSED" -> LoanStatusStyle(CitySuccess, Icons.Default.CheckCircle)
+    "FAILED", "REJECTED" -> LoanStatusStyle(CityError, Icons.Default.Cancel)
+    else -> LoanStatusStyle(CityWarning, Icons.Default.Schedule)
+}
+
 @Composable
 fun RecentLoanItemFromDTO(loan: LoanRequestDTO) {
+    val style = statusStyle(loan.status)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        colors = CardDefaults.cardColors(containerColor = appColors.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(CitySuccess.copy(alpha = 0.1f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = CitySuccess, modifier = Modifier.size(20.dp))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        loan.purpose ?: "Salary Advance",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
-                        color = CityTextDark
-                    )
-                    Text(loan.requestDate ?: "", color = CityTextGray, fontSize = 12.sp)
-                }
+            // Status-colored avatar
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(style.color.copy(alpha = 0.12f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    style.icon,
+                    contentDescription = null,
+                    tint = style.color,
+                    modifier = Modifier.size(22.dp)
+                )
             }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            // Title + date take the remaining width so a long purpose can't crowd the amount.
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    loan.purpose ?: "Salary Advance",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    color = appColors.textPrimary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(loan.requestDate ?: "", color = appColors.textSecondary, fontSize = 12.sp)
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Amount over a tinted status pill, right-aligned.
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "৳ ${String.format(Locale.US, "%,.0f", loan.requestedAmount)}",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = CityTextDark
+                    fontSize = 16.sp,
+                    color = appColors.textPrimary
                 )
-                Text(
-                    loan.status ?: "PENDING",
-                    color = when (loan.status) {
-                        "REPAID", "DISBURSED" -> CitySuccess
-                        "FAILED", "REJECTED" -> CityError
-                        else -> CityWarning
-                    },
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    modifier = Modifier
+                        .background(style.color.copy(alpha = 0.12f), RoundedCornerShape(50))
+                        .padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        loan.status ?: "PENDING",
+                        color = style.color,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp
+                    )
+                }
             }
         }
     }
@@ -363,19 +384,27 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
     var isRevealed by remember { mutableStateOf(false) }
     val cardShape = RoundedCornerShape(24.dp)
 
-    // Using Surface or Modifier.shadow to ensure the glass card floats above everything
+    // Frosted glass: translucent at the top so the red header bleeds through as pink,
+    // fading to near-opaque white by mid-card — matches the City Touch account card.
+    // Elevated so it unmistakably floats in front of both the header and the container.
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(EligibilityCardHeight),
         shape = cardShape,
-        colors = CardDefaults.cardColors(
-            containerColor = CityBackground.copy(alpha = 0.95f) // adjust alpha as needed
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),) {
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0.0f to appColors.glassBase.copy(alpha = 0.99f),
+                        0.45f to appColors.glassBase.copy(alpha = 0.85f),
+                        1.0f to appColors.glassBase.copy(alpha = 0.97f)
+                    )
+                )
                 .padding(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -384,7 +413,7 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
                         text = if (isRevealed) "৳ ${String.format(Locale.US, "%,.2f", amount)}" else "৳XXXX.XX",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Medium,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                     Spacer(modifier = Modifier.width(10.dp))
@@ -394,7 +423,7 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .size(20.dp)
                             .clickable { isRevealed = !isRevealed },
-                        tint = CityTextGray
+                        tint = appColors.textSecondary
                     )
                 }
 
@@ -412,12 +441,12 @@ fun EligibilityCard(amount: Double, modifier: Modifier = Modifier) {
                             "PayDay Advance A/C",
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                         Text(
                             "230446137000",
                             fontSize = 13.sp,
-                            color = CityTextGray
+                            color = appColors.textSecondary
                         )
                     }
                 }
@@ -432,7 +461,7 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = appColors.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),) {
         Column(modifier = Modifier.padding(16.dp)) {
             Box(
@@ -451,7 +480,7 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 title,
-                color = CityTextGray,
+                color = appColors.textSecondary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -459,7 +488,7 @@ fun InfoCard(title: String, amount: Double, icon: ImageVector, modifier: Modifie
                 "৳ ${String.format(Locale.US, "%,.0f", amount)}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = CityTextDark
+                color = appColors.textPrimary
             )
         }
     }

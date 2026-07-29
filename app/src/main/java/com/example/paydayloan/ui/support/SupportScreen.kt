@@ -30,7 +30,7 @@ import com.example.paydayloan.ui.theme.*
 @Composable
 fun SupportScreen(navController: NavController) {
     Scaffold(
-        containerColor = CityBackground,
+        containerColor = appColors.background,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -38,7 +38,7 @@ fun SupportScreen(navController: NavController) {
                         "Help & Support",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                 },
@@ -47,11 +47,11 @@ fun SupportScreen(navController: NavController) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = CityTextDark
+                            tint = appColors.textPrimary
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
@@ -70,7 +70,7 @@ fun SupportScreen(navController: NavController) {
                 "How can we help you?",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold,
-                    color = CityTextDark
+                    color = appColors.textPrimary
                 )
             )
             
@@ -97,12 +97,12 @@ fun SupportScreen(navController: NavController) {
                 value = "",
                 onValueChange = {},
                 modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search help articles...", color = CityTextGray) },
-                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = CityTextGray) },
+                placeholder = { Text("Search help articles...", color = appColors.textSecondary) },
+                leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null, tint = appColors.textSecondary) },
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = appColors.surface,
+                    focusedContainerColor = appColors.surface,
                     unfocusedBorderColor = Color.Transparent,
                     focusedBorderColor = CityMaroon.copy(alpha = 0.3f)
                 )
@@ -113,7 +113,7 @@ fun SupportScreen(navController: NavController) {
                 "Popular Topics",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = CityTextDark
+                    color = appColors.textPrimary
                 )
             )
 
@@ -123,28 +123,11 @@ fun SupportScreen(navController: NavController) {
                 SupportTopicItem(Icons.Outlined.AccountBalance, "Repayment Methods", "Automatic & manual repayments")
                 SupportTopicItem(Icons.Outlined.Security, "Security & Login", "Password and biometric issues")
             }
-            }
-
-            // 5. App Status
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .background(CitySuccess, CircleShape)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("All systems are operational", fontSize = 12.sp, color = CityTextGray)
-            }
 
             Spacer(modifier = Modifier.height(100.dp))
         }
     }
+}
 
 
 @Composable
@@ -152,7 +135,7 @@ fun ContactCard(icon: ImageVector, title: String, subtitle: String, modifier: Mo
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(20.dp),
-        color = Color.White,
+        color = appColors.surface,
         shadowElevation = 2.dp
     ) {
         Column(
@@ -168,8 +151,8 @@ fun ContactCard(icon: ImageVector, title: String, subtitle: String, modifier: Mo
                 Icon(icon, contentDescription = null, tint = CityMaroon, modifier = Modifier.size(20.dp))
             }
             Spacer(modifier = Modifier.height(12.dp))
-            Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = CityTextDark)
-            Text(subtitle, fontSize = 12.sp, color = CityTextGray)
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = appColors.textPrimary)
+            Text(subtitle, fontSize = 12.sp, color = appColors.textSecondary)
         }
     }
 }
@@ -179,7 +162,7 @@ fun SupportTopicItem(icon: ImageVector, title: String, subtitle: String) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White
+        color = appColors.surface
     ) {
         Row(
             modifier = Modifier
@@ -190,17 +173,17 @@ fun SupportTopicItem(icon: ImageVector, title: String, subtitle: String) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(CityBackground, CircleShape),
+                    .background(appColors.surfaceVariant, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(icon, contentDescription = null, tint = CityTextDark.copy(alpha = 0.7f), modifier = Modifier.size(20.dp))
+                Icon(icon, contentDescription = null, tint = appColors.textPrimary.copy(alpha = 0.7f), modifier = Modifier.size(20.dp))
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = CityTextDark)
-                Text(subtitle, fontSize = 12.sp, color = CityTextGray)
+                Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = appColors.textPrimary)
+                Text(subtitle, fontSize = 12.sp, color = appColors.textSecondary)
             }
-            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null, tint = CityTextGray.copy(alpha = 0.4f))
+            Icon(Icons.AutoMirrored.Outlined.KeyboardArrowRight, contentDescription = null, tint = appColors.textSecondary.copy(alpha = 0.4f))
         }
     }
 }

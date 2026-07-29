@@ -81,7 +81,7 @@ fun NotificationScreen(navController: NavController) {
     )
 
     Scaffold(
-        containerColor = CityBackground,
+        containerColor = appColors.background,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -89,16 +89,16 @@ fun NotificationScreen(navController: NavController) {
                         "Notifications",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = appColors.textPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
@@ -136,7 +136,7 @@ fun NotificationCard(notification: NotificationItem) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (notification.isRead) Color.White else Color.White
+            containerColor = appColors.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = if (notification.isRead) 0.dp else 2.dp)
     ) {
@@ -165,7 +165,7 @@ fun NotificationCard(notification: NotificationItem) {
                         notification.title,
                         fontWeight = if (notification.isRead) FontWeight.SemiBold else FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = CityTextDark
+                        color = appColors.textPrimary
                     )
                     if (!notification.isRead) {
                         Box(
@@ -179,14 +179,14 @@ fun NotificationCard(notification: NotificationItem) {
                 Text(
                     notification.message,
                     fontSize = 13.sp,
-                    color = CityTextGray,
+                    color = appColors.textSecondary,
                     lineHeight = 18.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     notification.time,
                     fontSize = 11.sp,
-                    color = CityTextGray.copy(alpha = 0.7f)
+                    color = appColors.textSecondary.copy(alpha = 0.7f)
                 )
             }
         }

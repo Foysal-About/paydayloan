@@ -1,8 +1,11 @@
 package com.example.paydayloan.ui.applyadvance
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Info
@@ -48,6 +51,46 @@ fun LoanSummaryScreen(
     }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    var termsAccepted by remember { mutableStateOf(false) }
+    var showTermsDialog by remember { mutableStateOf(false) }
+
+    if (showTermsDialog) {
+        AlertDialog(
+            onDismissRequest = { showTermsDialog = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    termsAccepted = true
+                    showTermsDialog = false
+                }) {
+                    Text("Accept", color = CityMaroon, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTermsDialog = false }) {
+                    Text("Close", color = appColors.textSecondary)
+                }
+            },
+            title = {
+                Text("Terms & Conditions", fontWeight = FontWeight.Bold, color = appColors.textPrimary)
+            },
+            text = {
+                Text(
+                    text = "1. The advance amount and a 2% service charge will be automatically " +
+                        "deducted from your next salary disbursement.\n\n" +
+                        "2. This request is subject to approval by your employer and City Bank.\n\n" +
+                        "3. You confirm that the information provided is accurate and that you are " +
+                        "authorized to request this salary advance.\n\n" +
+                        "4. Early repayment does not reduce the service charge already applied.\n\n" +
+                        "5. Pay Day Loan may share request details with your employer solely for " +
+                        "approval and repayment purposes.",
+                    fontSize = 13.sp,
+                    lineHeight = 19.sp,
+                    color = appColors.textPrimary
+                )
+            },
+            containerColor = appColors.surface
+        )
+    }
 
     LaunchedEffect(uiState) {
         if (uiState is LoanUiState.RequestSuccess) {
@@ -68,23 +111,24 @@ fun LoanSummaryScreen(
                         "Loan Summary",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = appColors.textPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
-        Box(modifier = Modifier.fillMaxSize().padding(padding).background(CityBackground)) {
+        Box(modifier = Modifier.fillMaxSize().padding(padding).background(appColors.background)) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -92,13 +136,13 @@ fun LoanSummaryScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = appColors.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(24.dp)) {
                         Text(
                             "Requested Amount",
-                            color = CityTextGray,
+                            color = appColors.textSecondary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium
                         )
@@ -109,7 +153,7 @@ fun LoanSummaryScreen(
                             fontWeight = FontWeight.ExtraBold
                         )
                         
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp), color = CityBackground)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 20.dp), color = appColors.divider)
                         
                         SummaryRow("Monthly Salary", monthlySalary)
                         SummaryRow("Eligible for Advance", eligibleAmount)
@@ -142,7 +186,7 @@ fun LoanSummaryScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = appColors.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
@@ -155,7 +199,7 @@ fun LoanSummaryScreen(
                 // Info Warning Box
                 Surface(
                     color = CityWarning.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(
@@ -172,13 +216,43 @@ fun LoanSummaryScreen(
                         Text(
                             text = "Your request will be sent to your employer for approval. After approval, the amount will be disbursed to your account.",
                             fontSize = 13.sp,
-                            color = CityTextDark,
+                            color = appColors.textPrimary,
                             lineHeight = 18.sp
                         )
                     }
                 }
 
-                Spacer(modifier = Modifier.weight(1f))
+                // Terms & conditions acceptance (required before submitting)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Checkbox(
+                        checked = termsAccepted,
+                        onCheckedChange = { termsAccepted = it },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = CityMaroon,
+                            uncheckedColor = appColors.textSecondary
+                        )
+                    )
+                    Text(
+                        text = buildAnnotatedString {
+                            append("I have read and agree to the ")
+                            withStyle(style = SpanStyle(color = CityMaroon, fontWeight = FontWeight.Bold)) {
+                                append("terms and conditions")
+                            }
+                            append(" of Pay Day Loan.")
+                        },
+                        fontSize = 13.sp,
+                        color = appColors.textSecondary,
+                        lineHeight = 18.sp,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showTermsDialog = true }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
                     onClick = {
@@ -187,9 +261,12 @@ fun LoanSummaryScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CityMaroon,
+                        disabledContainerColor = CityMaroon.copy(alpha = 0.4f)
+                    ),
                     shape = RoundedCornerShape(16.dp),
-                    enabled = uiState !is LoanUiState.Loading
+                    enabled = uiState !is LoanUiState.Loading && termsAccepted
                 ) {
                     if (uiState is LoanUiState.Loading) {
                         CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
@@ -198,19 +275,7 @@ fun LoanSummaryScreen(
                     }
                 }
 
-                Text(
-                    text = buildAnnotatedString {
-                        append("By tapping Submit, you agree to the ")
-                        withStyle(style = SpanStyle(color = CityMaroon, fontWeight = FontWeight.Bold)) {
-                            append("terms and conditions")
-                        }
-                        append(" of Pay Day Loan.")
-                    },
-                    fontSize = 12.sp,
-                    color = CityTextGray,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-                )
+                Spacer(modifier = Modifier.navigationBarsPadding().height(32.dp))
             }
         }
     }
@@ -224,10 +289,10 @@ fun SummaryRow(label: String, amount: Double) {
             .padding(vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, color = CityTextGray, fontSize = 14.sp)
+        Text(label, color = appColors.textSecondary, fontSize = 14.sp)
         Text(
             "৳ ${String.format(Locale.US, "%,.0f", amount)}",
-            color = CityTextDark,
+            color = appColors.textPrimary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -243,10 +308,10 @@ fun DetailInfoRow(label: String, value: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        Text(label, color = CityTextGray, fontSize = 14.sp, modifier = Modifier.weight(1f))
+        Text(label, color = appColors.textSecondary, fontSize = 14.sp, modifier = Modifier.weight(1f))
         Text(
             value,
-            color = CityTextDark,
+            color = appColors.textPrimary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.End,

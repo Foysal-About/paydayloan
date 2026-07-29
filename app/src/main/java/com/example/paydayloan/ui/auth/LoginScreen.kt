@@ -1,44 +1,56 @@
 package com.example.paydayloan.ui.auth
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import com.example.paydayloan.R
-import com.example.paydayloan.ui.theme.*
+import com.example.paydayloan.ui.components.UnderlineTextField
+import com.example.paydayloan.ui.theme.CityMaroon
+import com.example.paydayloan.ui.theme.appColors
 
 @Composable
 fun LoginScreen(navController: NavController) {
+    // ... (rest of the preamble)
     val context = LocalContext.current
-    var employeeId by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
+    var isBangla by remember { mutableStateOf(false) }
 
     val executor = remember { ContextCompat.getMainExecutor(context) }
     val biometricPrompt = remember {
@@ -64,241 +76,185 @@ fun LoginScreen(navController: NavController) {
             .build()
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(CityBackground)) {
-        // Background - Soft Animated Liquid Effect for Glassmorphism
-        Box(modifier = Modifier.fillMaxSize()) {
-            val transition = rememberInfiniteTransition(label = "liquid")
-            val animX by transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(15000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                ), label = "x"
+    // Theme-aware canvas: light mode gets a soft warm-white with a faint maroon
+    // wash at the top; dark mode keeps the premium near-black with a maroon glow.
+    val c = appColors
+    val brandGradient = if (c.isDark) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF3A0A0D), // muted maroon glow at top
+                Color(0xFF1A0708), // deep maroon-black
+                Color(0xFF0D0D0D)  // near-black base
             )
-            val animY by transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(20000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                ), label = "y"
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFFFBEEEC), // faint maroon-tinted white at top
+                Color(0xFFFDF8F7), // soft warm white
+                Color(0xFFF7F7F7)  // clean neutral base
             )
+        )
+    }
 
-            Canvas(modifier = Modifier.fillMaxSize().blur(80.dp)) {
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(CityMaroon.copy(alpha = 0.08f), Color.Transparent),
-                    ),
-                    center = Offset(size.width * (0.1f + 0.3f * animX), size.height * (0.2f + 0.4f * animY)),
-                    radius = size.width * 1.5f
-                )
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(Color(0xFF0EA5E9).copy(alpha = 0.1f), Color.Transparent),
-                    ),
-                    center = Offset(size.width * (0.9f - 0.4f * animY), size.height * (0.8f - 0.3f * animX)),
-                    radius = size.width * 1.2f
-                )
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(CityMaroon.copy(alpha = 0.05f), Color.Transparent),
-                    ),
-                    center = Offset(size.width * (0.5f + 0.2f * animY), size.height * (0.4f + 0.2f * animX)),
-                    radius = size.width * 1.0f
-                )
-            }
-        }
-
+    Box(modifier = Modifier.fillMaxSize().background(brandGradient)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
                 .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.Start
         ) {
-            // Top Navigation / Language
+            Spacer(modifier = Modifier.height(20.dp))
+
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                horizontalArrangement = Arrangement.End
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = Color.White.copy(alpha = 0.4f),
-                    border = BorderStroke(
-                        width = 1.dp,
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color.White.copy(alpha = 0.6f),
-                                Color.White.copy(alpha = 0.1f)
-                            )
-                        )
-                    ),
-                    modifier = Modifier.clickable { }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Default.Language, contentDescription = null, tint = CityTextDark, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("ENGLISH", color = CityTextDark, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.city_logo),
+                    contentDescription = "City Bank Logo",
+                    modifier = Modifier.size(60.dp),
+                    contentScale = ContentScale.Fit
+                )
             }
 
             Spacer(modifier = Modifier.height(60.dp))
 
-            // Brand Section
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(id = R.drawable.city_logo),
-                    contentDescription = "City Bank Logo",
-                    modifier = Modifier.size(100.dp),
-                    contentScale = ContentScale.Fit
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Row {
-                    Text("CITY ", color = CityTextDark, fontSize = 32.sp, fontWeight = FontWeight.ExtraBold)
-                    Text("PAYDAY", color = CityMaroon, fontSize = 32.sp, fontWeight = FontWeight.ExtraBold)
-                }
-            }
+            // Large Sign in header
+            Text(
+                text = "Sign in",
+                color = c.textPrimary,
+                fontSize = 38.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(50.dp))
 
-            // Login Inputs - Clean Light Glass Effect
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                // Employee ID Input
-                TextField(
-                    value = employeeId,
-                    onValueChange = { employeeId = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            Brush.linearGradient(
-                                listOf(Color.White.copy(alpha = 0.6f), Color.White.copy(alpha = 0.2f))
-                            ),
-                            RoundedCornerShape(22.dp)
-                        ),
-                    placeholder = { Text("Enter your ID", color = CityTextGray.copy(alpha = 0.7f)) },
-                    leadingIcon = { Icon(Icons.Outlined.Person, contentDescription = null, tint = CityMaroon.copy(alpha = 0.7f)) },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White.copy(alpha = 0.9f),
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.6f),
-                        focusedTextColor = CityTextDark,
-                        unfocusedTextColor = CityTextDark,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        cursorColor = CityMaroon
-                    ),
-                    shape = RoundedCornerShape(22.dp),
-                    singleLine = true
-                )
+            // Underline Text Fields
+            UnderlineTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Employee ID"
+            )
 
-                // Password Input
-                TextField(
-                    value = password,
-                    onValueChange = { password = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            1.dp,
-                            Brush.linearGradient(
-                                listOf(Color.White.copy(alpha = 0.6f), Color.White.copy(alpha = 0.2f))
-                            ),
-                            RoundedCornerShape(22.dp)
-                        ),
-                    placeholder = { Text("Enter password", color = CityTextGray.copy(alpha = 0.7f)) },
-                    leadingIcon = { Icon(Icons.Outlined.Lock, contentDescription = null, tint = CityMaroon.copy(alpha = 0.7f)) },
-                    trailingIcon = {
-                        Text(
-                            text = if (isPasswordVisible) "Hide" else "Show",
-                            color = CityMaroon,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier
-                                .padding(end = 16.dp)
-                                .clickable { isPasswordVisible = !isPasswordVisible }
-                        )
-                    },
-                    visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.White.copy(alpha = 0.9f),
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.6f),
-                        focusedTextColor = CityTextDark,
-                        unfocusedTextColor = CityTextDark,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        cursorColor = CityMaroon
-                    ),
-                    shape = RoundedCornerShape(22.dp),
-                    singleLine = true
-                )
-            }
+            Spacer(modifier = Modifier.height(30.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                Text(
-                    "Forgot Password/ID?",
-                    color = CityMaroon,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.clickable { }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            // Action Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { navController.navigate("dashboard") },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(60.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = CityMaroon),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
-                ) {
-                    Text("Login", fontSize = 18.sp, fontWeight = FontWeight.ExtraBold, color = Color.White)
-                }
-
-                Surface(
-                    onClick = { 
-                        try { biometricPrompt.authenticate(promptInfo) } catch (_: Exception) {}
-                    },
-                    modifier = Modifier.size(60.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color.White.copy(alpha = 0.6f),
-                    border = BorderStroke(1.dp, Color.White.copy(alpha = 0.6f)),
-                    shadowElevation = 0.dp
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
+            UnderlineTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = "Password",
+                visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                         Icon(
-                            imageVector = Icons.Default.Fingerprint,
-                            contentDescription = "Biometric", 
-                            tint = CityMaroon,
-                            modifier = Modifier.size(28.dp)
+                            imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = null,
+                            tint = c.textSecondary
                         )
                     }
                 }
+            )
+
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Primary Sign in button (takes remaining width)
+                OutlinedButton(
+                    onClick = { navController.navigate("dashboard") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = CityMaroon
+                    ),
+                    border = BorderStroke(1.dp, CityMaroon),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(
+                        text = "Sign in",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                // Icon-only Face ID button beside it
+                Button(
+                    onClick = { biometricPrompt.authenticate(promptInfo) },
+                    modifier = Modifier.size(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    contentPadding = PaddingValues(0.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = CityMaroon,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.face_id),
+                        contentDescription = "Sign in with Face ID",
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
+            Text(
+                text = "Forgot User ID/ Password?",
+                color = CityMaroon,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.clickable { /* TODO: forgot credentials flow */ }
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        // Transparent language toggle pill, top-right
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+                .padding(top = 20.dp, end = 20.dp)
+                .clip(RoundedCornerShape(50))
+                .border(
+                    BorderStroke(1.dp, c.textPrimary.copy(alpha = 0.25f)),
+                    RoundedCornerShape(50)
+                )
+                .clickable { isBangla = !isBangla }
+                .animateContentSize(
+                    animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing)
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Language,
+                contentDescription = "Change language",
+                tint = c.textPrimary,
+                modifier = Modifier.size(18.dp)
+            )
+            AnimatedContent(
+                targetState = isBangla,
+                transitionSpec = {
+                    (fadeIn(tween(300, easing = FastOutSlowInEasing)))
+                        .togetherWith(fadeOut(tween(200, easing = FastOutSlowInEasing)))
+                },
+                label = "languageLabel"
+            ) { bangla ->
+                Text(
+                    text = if (bangla) "বাংলা" else "ENGLISH",
+                    color = c.textPrimary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

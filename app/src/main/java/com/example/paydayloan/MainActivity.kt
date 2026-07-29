@@ -4,19 +4,11 @@ import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -30,6 +22,7 @@ import com.example.paydayloan.ui.history.HistoryScreen
 import com.example.paydayloan.ui.notification.NotificationScreen
 import com.example.paydayloan.ui.support.SupportScreen
 import com.example.paydayloan.ui.settings.SettingsScreen
+import com.example.paydayloan.ui.settings.LinkedDevicesScreen
 import com.example.paydayloan.ui.search.SearchScreen
 import com.example.paydayloan.ui.components.AppNavigationBar
 import com.example.paydayloan.ui.theme.*
@@ -52,7 +45,7 @@ class MainActivity : FragmentActivity() {
                     "settings"
                 )
 
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = Modifier.fillMaxSize().background(appColors.background)) {
                     NavHost(
                         navController = navController,
                         startDestination = "login",
@@ -87,6 +80,9 @@ class MainActivity : FragmentActivity() {
                         }
                         composable("settings") {
                             SettingsScreen(navController)
+                        }
+                        composable("linked_devices") {
+                            LinkedDevicesScreen(navController)
                         }
                         composable("notifications") {
                             NotificationScreen(navController)

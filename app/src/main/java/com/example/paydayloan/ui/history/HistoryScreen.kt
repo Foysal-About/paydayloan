@@ -9,16 +9,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -42,8 +45,27 @@ fun HistoryScreen(
         viewModel.loadDashboard(1L)
     }
 
+    val c = appColors
+    val brandGradient = if (c.isDark) {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFF3A0A0D),
+                Color(0xFF1A0708),
+                Color(0xFF0D0D0D)
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                Color(0xFFFBEEEC),
+                Color(0xFFFDF8F7),
+                Color(0xFFF7F7F7)
+            )
+        )
+    }
+
     Scaffold(
-        containerColor = CityBackground,
+        containerColor = Color.Transparent,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -51,22 +73,23 @@ fun HistoryScreen(
                         "Transaction History",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = CityTextDark
+                            color = appColors.textPrimary
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = CityTextDark)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = appColors.textPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         }
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(brandGradient)
                 .padding(top = padding.calculateTopPadding())
         ) {
             when (val state = uiState) {
@@ -114,13 +137,13 @@ fun EmptyHistoryView() {
             "No History Yet",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold,
-                color = CityTextDark
+                color = appColors.textPrimary
             )
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             "Your salary advance transactions will appear here.",
-            color = CityTextGray,
+            color = appColors.textSecondary,
             fontSize = 14.sp,
             modifier = Modifier.padding(horizontal = 40.dp),
             textAlign = TextAlign.Center
@@ -128,57 +151,84 @@ fun EmptyHistoryView() {
     }
 }
 
+// Maps a loan status to its visual treatment: accent color + leading icon.
+private data class LoanStatusStyle(val color: Color, val icon: ImageVector)
+
+private fun statusStyle(status: String?): LoanStatusStyle = when (status) {
+    "REPAID", "DISBURSED" -> LoanStatusStyle(CitySuccess, Icons.Default.CheckCircle)
+    "FAILED", "REJECTED" -> LoanStatusStyle(CityError, Icons.Default.Cancel)
+    else -> LoanStatusStyle(CityWarning, Icons.Default.Schedule)
+}
+
 @Composable
 fun HistoryItem(loan: LoanRequestDTO) {
+    val style = statusStyle(loan.status)
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = appColors.surface.copy(alpha = 0.7f)),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, appColors.divider.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .background(CitySuccess.copy(alpha = 0.1f), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = CitySuccess, modifier = Modifier.size(20.dp))
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        loan.purpose ?: "Salary Advance",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 15.sp,
-                        color = CityTextDark
-                    )
-                    Text(loan.requestDate ?: "", color = CityTextGray, fontSize = 12.sp)
-                }
+            // Status-colored avatar
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(style.color.copy(alpha = 0.12f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    style.icon,
+                    contentDescription = null,
+                    tint = style.color,
+                    modifier = Modifier.size(22.dp)
+                )
             }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            // Title + date take the remaining width so a long purpose can't crowd the amount.
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    loan.purpose ?: "Salary Advance",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 15.sp,
+                    color = appColors.textPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(loan.requestDate ?: "", color = appColors.textSecondary, fontSize = 12.sp)
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            // Amount over a tinted status pill, right-aligned.
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     "৳ ${String.format(Locale.US, "%,.0f", loan.requestedAmount)}",
                     fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = CityTextDark
+                    fontSize = 16.sp,
+                    color = appColors.textPrimary
                 )
-                Text(
-                    loan.status ?: "PENDING",
-                    color = when (loan.status) {
-                        "REPAID", "DISBURSED" -> CitySuccess
-                        "FAILED", "REJECTED" -> CityError
-                        else -> CityWarning
-                    },
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    modifier = Modifier
+                        .background(style.color.copy(alpha = 0.12f), RoundedCornerShape(50))
+                        .padding(horizontal = 10.dp, vertical = 3.dp)
+                ) {
+                    Text(
+                        loan.status ?: "PENDING",
+                        color = style.color,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 0.5.sp
+                    )
+                }
             }
         }
     }

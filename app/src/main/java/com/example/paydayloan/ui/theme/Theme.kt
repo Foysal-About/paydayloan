@@ -9,19 +9,37 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
+
+// User-selectable appearance. Held in a process-wide holder so the toggle in
+// Settings updates the whole app instantly without threading state through
+// every navigation destination.
+enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
+object ThemeController {
+    var mode by mutableStateOf(ThemeMode.SYSTEM)
+}
 
 private val DarkColorScheme = darkColorScheme(
     primary = CityMaroon,
     secondary = CityGold,
     tertiary = CityMaroonLight,
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
+    background = Color(0xFF0D0D0D),
+    surface = Color(0xFF1A1A1A),
     onPrimary = Color.White,
     onSecondary = Color.Black,
-    onBackground = Color.White,
-    onSurface = Color.White
+    onBackground = Color(0xFFF5F5F5),
+    onSurface = Color(0xFFF5F5F5),
+    error = CityError,
+    onError = Color.White
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -40,7 +58,13 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun paydayloanTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    // Resolves the effective dark state from the user's appearance choice,
+    // falling back to the system setting when SYSTEM is selected.
+    darkTheme: Boolean = when (ThemeController.mode) {
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+    },
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false, // Set to false to maintain brand identity
     content: @Composable () -> Unit
@@ -55,9 +79,22 @@ fun paydayloanTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    val appColors = if (darkTheme) DarkAppColors else LightAppColors
+
+    // Keep the status bar icons legible: light icons in dark mode, dark in light.
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+        }
+    }
+
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
