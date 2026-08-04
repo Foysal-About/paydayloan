@@ -46,8 +46,12 @@ fun ApplyAdvanceScreen(
 
     var requestedAmount by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    val purposes = listOf("Short of cash", "Medical emergency", "Family support", "Education")
+    val purposes = listOf("Short of cash", "Medical emergency", "Family support", "Education", "Other")
     var selectedPurpose by remember { mutableStateOf(purposes[0]) }
+    var customPurpose by remember { mutableStateOf("") }
+    val isCustomPurpose = selectedPurpose == "Other"
+    // The purpose value actually submitted: the typed text when "Other" is chosen.
+    val effectivePurpose = if (isCustomPurpose) customPurpose.trim() else selectedPurpose
 
     LaunchedEffect(Unit) {
         dashboardViewModel.loadDashboard(1L)
@@ -221,6 +225,27 @@ fun ApplyAdvanceScreen(
                                         }
                                     }
                                 }
+
+                                // When "Other" is chosen, let the user type their own purpose.
+                                if (isCustomPurpose) {
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    OutlinedTextField(
+                                        value = customPurpose,
+                                        onValueChange = { customPurpose = it },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        shape = RoundedCornerShape(20.dp),
+                                        singleLine = true,
+                                        placeholder = {
+                                            Text("Type your purpose", color = appColors.textSecondary.copy(alpha = 0.8f))
+                                        },
+                                        colors = OutlinedTextFieldDefaults.colors(
+                                            unfocusedContainerColor = appColors.glassBase.copy(alpha = 0.55f),
+                                            focusedContainerColor = appColors.glassBase.copy(alpha = 0.7f),
+                                            focusedBorderColor = CityMaroon,
+                                            unfocusedBorderColor = appColors.glassBorder
+                                        )
+                                    )
+                                }
                             }
 
                             // Estimated Charges Card
@@ -288,7 +313,7 @@ fun ApplyAdvanceScreen(
 
                             Button(
                                 onClick = {
-                                    val encodedPurpose = URLEncoder.encode(selectedPurpose, StandardCharsets.UTF_8.toString())
+                                    val encodedPurpose = URLEncoder.encode(effectivePurpose, StandardCharsets.UTF_8.toString())
                                     navController.navigate("loan_summary/$amount/$serviceCharge/$netAmount/$encodedPurpose/${data.monthlySalary}/${maxEligible}")
                                 },
                                 modifier = Modifier
@@ -299,7 +324,8 @@ fun ApplyAdvanceScreen(
                                     disabledContainerColor = CityMaroon.copy(alpha = 0.35f)
                                 ),
                                 shape = RoundedCornerShape(16.dp),
-                                enabled = amount >= 1000 && amount <= availableLimit
+                                enabled = amount >= 1000 && amount <= availableLimit &&
+                                    (!isCustomPurpose || effectivePurpose.isNotBlank())
                             ) {
                                 Text("Continue", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                             }

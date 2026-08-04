@@ -51,6 +51,19 @@ fun LoginScreen(navController: NavController) {
     var password by remember { mutableStateOf("") }
     var isPasswordVisible by remember { mutableStateOf(false) }
     var isBangla by remember { mutableStateOf(false) }
+    var loginError by remember { mutableStateOf<String?>(null) }
+
+    // Hardcoded demo credentials.
+    fun attemptLogin() {
+        if (email.trim() == "admin1" && password == "1") {
+            loginError = null
+            navController.navigate("dashboard") {
+                popUpTo("login") { inclusive = true }
+            }
+        } else {
+            loginError = "Invalid Employee ID or password"
+        }
+    }
 
     val executor = remember { ContextCompat.getMainExecutor(context) }
     val biometricPrompt = remember {
@@ -135,7 +148,7 @@ fun LoginScreen(navController: NavController) {
             // Underline Text Fields
             UnderlineTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { email = it; loginError = null },
                 label = "Employee ID"
             )
 
@@ -143,7 +156,7 @@ fun LoginScreen(navController: NavController) {
 
             UnderlineTextField(
                 value = password,
-                onValueChange = { password = it },
+                onValueChange = { password = it; loginError = null },
                 label = "Password",
                 visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -157,6 +170,16 @@ fun LoginScreen(navController: NavController) {
                 }
             )
 
+            loginError?.let { error ->
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+
             Spacer(modifier = Modifier.height(60.dp))
 
             Row(
@@ -166,7 +189,7 @@ fun LoginScreen(navController: NavController) {
             ) {
                 // Primary Sign in button (takes remaining width)
                 OutlinedButton(
-                    onClick = { navController.navigate("dashboard") },
+                    onClick = { attemptLogin() },
                     modifier = Modifier
                         .weight(1f)
                         .height(56.dp),
